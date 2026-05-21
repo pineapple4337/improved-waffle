@@ -77,17 +77,41 @@
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
-                        <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px]">
+                        <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px] select-none">
                             <tr>
-                                <th class="w-1/3 px-6 py-4">Name</th>
-                                <th class="w-1/4 px-6 py-4" x-text="activeTab === 'people' ? 'Role' : 'Type'"></th>
-                                <th class="w-1/4 px-6 py-4" x-text="activeTab === 'people' ? 'Additional Metric' : 'Location'"></th>
-                                <th class="w-1/6 px-6 py-4 text-center">Engagements</th>
+                                <th @click="sortBy('name')" class="w-1/3 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Name</span>
+                                        <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                    </div>
+                                </th>
+                                
+                                <th @click="sortBy('type')" class="w-1/4 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                    <div class="flex items-center space-x-1">
+                                        <span x-text="activeTab === 'people' ? 'Role' : 'Type'"></span>
+                                        <span x-show="sortColumn === 'type'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                    </div>
+                                </th>
+                                
+                                <th @click="sortBy('location')" class="w-1/4 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                    <div class="flex items-center space-x-1">
+                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : 'Location'"></span>
+                                        <span x-show="sortColumn === 'location'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                    </div>
+                                </th>
+                                
+                                <th @click="sortBy('total_engagements')" class="w-1/6 px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition">
+                                    <div class="flex items-center justify-center space-x-1">
+                                        <span>Engagements</span>
+                                        <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                    </div>
+                                </th>
+                                
                                 <th class="w-1/4 px-6 py-4">Latest Sentiment</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            <template x-for="item in filteredData()" :key="item.name">
+                            <template x-for="item in paginatedData()" :key="item.name">
                                 <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-indigo-50/50 cursor-pointer transition">
                                     <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
                                     
@@ -108,9 +132,56 @@
                         </tbody>
                     </table>
                 </div>
+            </div> <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mt-4">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Previous</button>
+                    <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Next</button>
+                </div>
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing entries 
+                            <span class="font-semibold" x-text="((currentPage - 1) * itemsPerPage) + 1"></span> 
+                            to 
+                            <span class="font-semibold" x-text="Math.min(currentPage * itemsPerPage, filteredData().length)"></span> 
+                            of 
+                            <span class="font-semibold" x-text="filteredData().length"></span> 
+                            results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-2" aria-label="Pagination">
+                            <button 
+                                @click="currentPage = 1" 
+                                :disabled="currentPage === 1"
+                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
+                                First
+                            </button>
+                            <button 
+                                @click="currentPage > 1 ? currentPage-- : null" 
+                                :disabled="currentPage === 1"
+                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
+                                Prev
+                            </button>
+                            <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border border-gray-300 rounded-lg">
+                                Page <span class="mx-1 text-indigo-600" x-text="currentPage"></span> of <span class="ml-1" x-text="totalPages()"></span>
+                            </span>
+                            <button 
+                                @click="currentPage < totalPages() ? currentPage++ : null" 
+                                :disabled="currentPage === totalPages()"
+                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
+                                Next
+                            </button>
+                            <button 
+                                @click="currentPage = totalPages()" 
+                                :disabled="currentPage === totalPages()"
+                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
+                                Last
+                            </button>
+                        </nav>
+                    </div>
+                </div>
             </div>
-        </div>
-
         <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto">
             <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-gray-900">Log Engagement Interaction</h2>
@@ -333,6 +404,12 @@
                 selectedItem: null,
                 dropdownOpen: false,
                 
+                // Sorting & Pagination States
+                sortColumn: 'name',       
+                sortAscending: true,      
+                currentPage: 1,           
+                itemsPerPage: 50,         
+    
                 // Spreadsheet CSV/XLSX Importer Registry
                 mappingModalOpen: false,
                 uploadedHeaders: [],
@@ -372,32 +449,81 @@
                 },
     
                 // ------------------------------------------------
-                // 2. DATA FILTERING ENGINE
+                // 2. DATA FILTERING, SORTING, & PAGINATION PIPELINE
                 // ------------------------------------------------
                 getUniqueTypes() {
                     const types = this.ecosystem.map(item => item.type).filter(Boolean);
                     return [...new Set(types)];
                 },
     
+                sortBy(column) {
+                    if (this.sortColumn === column) {
+                        this.sortAscending = !this.sortAscending;
+                    } else {
+                        this.sortColumn = column;
+                        this.sortAscending = true;
+                    }
+                    this.currentPage = 1; 
+                },
+    
                 filteredData() {
                     let data = this[this.activeTab];
                     
-                    // Handle dropdown column matching
+                    // 1. Dropdown Column Matching
                     if (this.activeTab === 'ecosystem' && this.selectedTypeFilter) {
                         data = data.filter(i => i.type === this.selectedTypeFilter);
                     }
                     
-                    if (!this.searchQuery.trim()) return data;
-                    const query = this.searchQuery.toLowerCase();
-                    
-                    return data.filter(i => {
-                        if (this.activeTab === 'ecosystem' || this.activeTab === 'venues') {
-                            return i.name.toLowerCase().includes(query) || 
-                                   (i.type && i.type.toLowerCase().includes(query)) ||
-                                   (i.location && i.location.toLowerCase().includes(query));
+                    // 2. Text Query Search Filtering
+                    if (this.searchQuery.trim()) {
+                        const query = this.searchQuery.toLowerCase();
+                        data = data.filter(i => {
+                            if (this.activeTab === 'ecosystem' || this.activeTab === 'venues') {
+                                return i.name.toLowerCase().includes(query) || 
+                                       (i.type && i.type.toLowerCase().includes(query)) ||
+                                       (i.location && i.location.toLowerCase().includes(query));
+                            }
+                            return i.name.toLowerCase().includes(query);
+                        });
+                    }
+    
+                    // 3. Sorting Processor (Alphabetical & Numeric fields)
+                    data.sort((a, b) => {
+                        let valA = a[this.sortColumn];
+                        let valB = b[this.sortColumn];
+    
+                        if (this.sortColumn === 'type' || this.sortColumn === 'role') {
+                            valA = a.role || a.type || '';
+                            valB = b.role || b.type || '';
                         }
-                        return i.name.toLowerCase().includes(query);
+                        if (this.sortColumn === 'location' || this.sortColumn === 'meta') {
+                            valA = this.activeTab === 'people' ? (a.meta && Object.values(a.meta)[0] ? Object.values(a.meta)[0] : '') : (a.location || '');
+                            valB = this.activeTab === 'people' ? (b.meta && Object.values(b.meta)[0] ? Object.values(b.meta)[0] : '') : (b.location || '');
+                        }
+    
+                        if (typeof valA === 'number' && typeof valB === 'number') {
+                            return this.sortAscending ? valA - valB : valB - valA;
+                        }
+    
+                        valA = String(valA).toLowerCase();
+                        valB = String(valB).toLowerCase();
+    
+                        if (valA < valB) return this.sortAscending ? -1 : 1;
+                        if (valA > valB) return this.sortAscending ? 1 : -1;
+                        return 0;
                     });
+    
+                    return data;
+                },
+    
+                paginatedData() {
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return this.filteredData().slice(start, end);
+                },
+    
+                totalPages() {
+                    return Math.ceil(this.filteredData().length / this.itemsPerPage) || 1;
                 },
     
                 sentimentClasses(s) {
@@ -494,7 +620,7 @@
                 },
     
                 // ------------------------------------------------
-                // 5. FILE INGESTION PIPELINES
+                // 5. FILE INGESTION PIPELINES (CSV/XLSX)
                 // ------------------------------------------------
                 handleFileIntercept(event) {
                     const file = event.target.files[0];
@@ -560,7 +686,7 @@
     
                     this.rawInterceptedData.forEach(row => {
                         let parsedName = '';
-                        let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Resource' };
+                        let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
                         let legacySector = 'Imported Sector Base';
                         let legacyMeta = {};
     
