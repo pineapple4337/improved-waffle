@@ -16,8 +16,8 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">R</div>
-                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
+                <span class="font-bold text-lg tracking-tight">VibeCRM v8</span>
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
@@ -104,7 +104,7 @@
                                 <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
                                     @click="sortBy(activeTab === 'people' ? 'meta' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : (activeTab === 'ecosystem' ? 'Location' : 'Capacity')"></span>
+                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
                                         <span x-show="['meta', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
@@ -122,7 +122,7 @@
                                 <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-indigo-50/50 cursor-pointer transition">
                                     <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
                                     <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? item.role : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
-                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (activeTab === 'ecosystem' ? item.location : item.capacity || '—')"></td>
+                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (activeTab === 'ecosystem' ? item.location : (item.region ? '[' + item.region + '] ' : '') + (item.capacity ? item.capacity + ' pax' : '—'))"></td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
                                     </td>
@@ -266,15 +266,26 @@
 
                 <template x-if="activeTab === 'venues'">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Details</label>
-                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Region Category *</label>
+                            <select x-model="creationForm.region" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                                <option value="">Select Region...</option>
+                                <option value="East">East</option>
+                                <option value="South">South</option>
+                                <option value="North">North</option>
+                                <option value="North-east">North-east</option>
+                                <option value="West">West</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Capacity Maximum</label>
                             <input type="text" x-model="creationForm.capacity" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
-                        <div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Details</label>
+                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div class="col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours</label>
                             <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
@@ -328,7 +339,7 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Classification Target Tags (Comma Separated)</label>
-                    <input type="text" x-model="creationForm.tags" placeholder="e.g. Seniors, Low-income" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" x-model="creationForm.tags" placeholder="e.g. Seniors, Environment" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
                 </div>
 
                 <div class="pt-4 border-t flex justify-end space-x-3">
@@ -368,6 +379,7 @@
                                     <option value="role" x-show="activeTab === 'people'">Core Field: Role</option>
                                     <option value="type" x-show="activeTab === 'ecosystem'">Ecosystem Field: Type</option>
                                     <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Location</option>
+                                    <option value="region" x-show="activeTab === 'venues'">Venue Field: Region</option>
                                     <option value="capacity" x-show="activeTab === 'venues'">Venue Field: Capacity</option>
                                     <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Operating Hours</option>
                                     <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Description</option>
@@ -415,9 +427,41 @@
                         <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes Schema</h3>
                         
                         <div class="space-y-4">
-                            <template x-if="['ecosystem', 'venues'].includes(activeTab)">
+                            <template x-if="activeTab === 'venues'">
                                 <div class="space-y-3">
-                                    <template x-for="field in (activeTab === 'ecosystem' ? ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description'] : ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'remarks'])">
+                                    <div>
+                                        <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Region</label>
+                                        <template x-if="!isEditing">
+                                            <p class="font-semibold text-gray-900 break-words" x-text="selectedItem.region || '—'"></p>
+                                        </template>
+                                        <template x-if="isEditing">
+                                            <select x-model="selectedItem.region" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500">
+                                                <option value="">Select Region...</option>
+                                                <option value="East">East</option>
+                                                <option value="South">South</option>
+                                                <option value="North">North</option>
+                                                <option value="North-east">North-east</option>
+                                                <option value="West">West</option>
+                                            </select>
+                                        </template>
+                                    </div>
+                                    <template x-for="field in ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'remarks']">
+                                        <div>
+                                            <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
+                                            <template x-if="!isEditing">
+                                                <p class="font-semibold text-gray-900 break-words" x-text="selectedItem[field] || '—'"></p>
+                                            </template>
+                                            <template x-if="isEditing">
+                                                <input type="text" x-model="selectedItem[field]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500">
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="activeTab === 'ecosystem'">
+                                <div class="space-y-3">
+                                    <template x-for="field in ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description']">
                                         <div>
                                             <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
                                             <template x-if="!isEditing">
@@ -478,7 +522,7 @@
 
                         <div x-show="isEditing" class="space-y-4 pt-3 border-t border-gray-200" x-transition>
                             <div>
-                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preset Groupings Selection</label>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preset Groupings Selection</label>
                                 <div class="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1 bg-white border rounded-lg">
                                     <template x-for="preset in availablePresets" :key="preset">
                                         <button 
@@ -493,7 +537,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Create Custom Specification Tag</label>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Create Custom Specification Tag</label>
                                 <div class="flex space-x-1">
                                     <input 
                                         type="text" 
@@ -565,9 +609,8 @@
     
                 logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
                 
-                // MANUAL CREATION MODAL STATE
                 creationModalOpen: false,
-                creationForm: { name: '', role: '', metaKey: '', metaValue: '', location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
+                creationForm: { name: '', role: '', metaKey: '', metaValue: '', location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
     
                 people: [],
                 venues: [],
@@ -578,7 +621,8 @@
                 availablePresets: [
                     'Seniors', 'Children & Youth', 'Families', 
                     'Persons with Disabilities', 'Mental Health', 
-                    'Low-income', 'Caregivers', 'Crisis & Protection'
+                    'Low-income', 'Caregivers', 'Crisis & Protection',
+                    'Environment', 'Arts', 'Sports', 'Culture'
                 ],
     
                 async init() {
@@ -621,11 +665,13 @@
                         const query = this.searchQuery.toLowerCase();
                         data = data.filter(i => {
                             const tagsStr = i.tags ? String(i.tags).toLowerCase() : '';
+                            const regionStr = i.region ? String(i.region).toLowerCase() : '';
                             if (this.activeTab === 'ecosystem' || this.activeTab === 'venues') {
                                 return i.name.toLowerCase().includes(query) || 
                                        (i.type && i.type.toLowerCase().includes(query)) ||
                                        (i.location && i.location.toLowerCase().includes(query)) ||
-                                       tagsStr.includes(query);
+                                       tagsStr.includes(query) ||
+                                       regionStr.includes(query);
                             }
                             return i.name.toLowerCase().includes(query) || tagsStr.includes(query);
                         });
@@ -708,7 +754,7 @@
                         }
                     }
                     this.isEditing = false;
-                    alert("Changes successfully synchronized across active cluster nodes.");
+                    alert("Changes successfully saved to database.");
                 },
 
                 getArrayFromTags(tagsField) {
@@ -739,13 +785,10 @@
                     }
                 },
 
-                // ------------------------------------------------
-                // MANUAL CREATION FUNCTIONAL LOGIC SUBROUTINES
-                // ------------------------------------------------
                 openCreationModal() {
                     this.creationForm = {
                         name: '', role: '', metaKey: '', metaValue: '',
-                        location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '',
+                        location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '',
                         type: 'General Enabler', phone: '', email: '', website: '', tags: ''
                     };
                     this.creationModalOpen = true;
@@ -770,6 +813,7 @@
                         payload.meta = parsedMeta;
                     } else if (type === 'venues') {
                         payload.location = this.creationForm.location;
+                        payload.region = this.creationForm.region;
                         payload.capacity = this.creationForm.capacity;
                         payload.operating_hours = this.creationForm.operating_hours;
                         payload.description = this.creationForm.description;
@@ -785,7 +829,6 @@
                         payload.description = this.creationForm.description;
                     }
 
-                    // Cloud Write Transaction Hook
                     const { data, error } = await supabaseClient.from(type).insert([payload]).select();
                     if (error) {
                         console.error("Cloud insert aborted:", error);
@@ -793,7 +836,6 @@
                         return;
                     }
 
-                    // Append directly to reactive collection state engine array
                     this[type].push(payload);
                     this.creationModalOpen = false;
                     alert("Profile record successfully committed and appended across dataset layers.");
@@ -929,7 +971,8 @@
                             else if (/type|category/i.test(clean)) this.headerMappings[h] = 'type';
                             else this.headerMappings[h] = 'ignore';
                         } else if (this.activeTab === 'venues') {
-                            if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
+                            if (/region/i.test(clean)) this.headerMappings[h] = 'region';
+                            else if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
                             else if (/capacity|size|max/i.test(clean)) this.headerMappings[h] = 'capacity';
                             else if (/hour|operating|time|open/i.test(clean)) this.headerMappings[h] = 'operating_hours';
                             else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
@@ -959,7 +1002,7 @@
                         let parsedName = '';
                         let parsedTags = '';
                         let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
-                        let venueData = { location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '' };
+                        let venueData = { location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '' };
                         let legacySector = 'Imported Sector Base';
                         let legacyMeta = {};
     
