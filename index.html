@@ -16,8 +16,8 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">R</div>
-                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
+                <span class="font-bold text-lg tracking-tight">VibeCRM v8</span>
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
@@ -63,7 +63,12 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+                    <button @click="openCreationModal()" class="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <span>Add <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resource' : (activeTab === 'people' ? 'Person' : 'Venue')"></span></span>
+                    </button>
+
                     <button @click="exportCurrentTable()" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
                         <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <span>Export CSV</span>
@@ -109,7 +114,7 @@
                                         <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="w-1/6 px-4 py-4">Tags</th>
+                                <th class="w-1/6 px-4 py-4">Tags Base</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -219,6 +224,121 @@
         </div>
     </main>
 
+    <div x-show="creationModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Create New Record Profile</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Manually input profile data fields to synchronize directly to <span class="uppercase font-semibold text-indigo-600" x-text="activeTab"></span> storage layer.</p>
+                </div>
+                <button @click="creationModalOpen = false" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form @submit.prevent="executeManualCreation()" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Entity Name *</label>
+                    <input type="text" x-model="creationForm.name" required class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <template x-if="activeTab === 'people'">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Role / Sector Base</label>
+                            <input type="text" x-model="creationForm.role" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="p-4 bg-indigo-50/40 border border-indigo-100 rounded-xl space-y-3">
+                            <span class="text-[10px] font-bold tracking-widest uppercase text-indigo-400 block">Secondary Metadata Properties</span>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Meta Property Key</label>
+                                    <input type="text" x-model="creationForm.metaKey" placeholder="e.g. Organization" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Meta Property Value</label>
+                                    <input type="text" x-model="creationForm.metaValue" placeholder="e.g. Care Network" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="activeTab === 'venues'">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Details</label>
+                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Capacity Maximum</label>
+                            <input type="text" x-model="creationForm.capacity" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours</label>
+                            <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description Overview</label>
+                            <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Bookings & Terms Matrix</label>
+                            <input type="text" x-model="creationForm.bookings_and_terms" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Internal Remarks</label>
+                            <input type="text" x-model="creationForm.remarks" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="activeTab === 'ecosystem'">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Resource Type Definition</label>
+                            <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm" placeholder="e.g. Active Ageing Centres">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
+                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Phone Contact</label>
+                            <input type="text" x-model="creationForm.phone" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Email Connection</label>
+                            <input type="email" x-model="creationForm.email" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours</label>
+                            <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Website URL Domain</label>
+                            <input type="text" x-model="creationForm.website" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Resource Scope Description</label>
+                            <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
+                        </div>
+                    </div>
+                </template>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Classification Target Tags (Comma Separated)</label>
+                    <input type="text" x-model="creationForm.tags" placeholder="e.g. Seniors, Low-income" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div class="pt-4 border-t flex justify-end space-x-3">
+                    <button type="button" @click="creationModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Save To Database</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div x-show="mappingModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
@@ -292,7 +412,7 @@
             <div class="flex-1 overflow-y-auto p-8 grid grid-cols-3 gap-8">
                 <div class="col-span-1 space-y-6">
                     <div class="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Details</h3>
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes Schema</h3>
                         
                         <div class="space-y-4">
                             <template x-if="['ecosystem', 'venues'].includes(activeTab)">
@@ -342,7 +462,7 @@
                     </div>
 
                     <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Tags</h3>
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Assigned Category Targets</h3>
                         
                         <div class="flex flex-wrap gap-1.5 mb-4">
                             <template x-for="tag in getArrayFromTags(selectedItem?.tags)" :key="tag">
@@ -394,7 +514,7 @@
                 </div>
 
                 <div class="col-span-2 space-y-4">
-                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction History</h3>
+                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction Timeline Ledger</h3>
                     <div class="space-y-3">
                         <template x-for="log in getLogs(selectedItem?.name)" :key="log.timestamp">
                             <div class="p-4 bg-white border rounded-xl shadow-sm space-y-2">
@@ -444,13 +564,16 @@
                 rawInterceptedData: [],
     
                 logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
+                
+                // MANUAL CREATION MODAL STATE
+                creationModalOpen: false,
+                creationForm: { name: '', role: '', metaKey: '', metaValue: '', location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
     
                 people: [],
                 venues: [],
                 ecosystem: [],
                 logs: [],
 
-                // Explicitly declared target tags baseline registries
                 newTagInput: '',
                 availablePresets: [
                     'Seniors', 'Children & Youth', 'Families', 
@@ -585,12 +708,9 @@
                         }
                     }
                     this.isEditing = false;
-                    alert("Changes saved!");
+                    alert("Changes successfully synchronized across active cluster nodes.");
                 },
 
-                // ------------------------------------------------
-                // CLOUD TRANSACTION TAG MUTATOR SUBROUTINES
-                // ------------------------------------------------
                 getArrayFromTags(tagsField) {
                     if (!tagsField) return [];
                     if (Array.isArray(tagsField)) return tagsField;
@@ -620,20 +740,73 @@
                 },
 
                 // ------------------------------------------------
-                // DYNAMIC MULTI-TAB TABLE DATA EXPORT ACTION
+                // MANUAL CREATION FUNCTIONAL LOGIC SUBROUTINES
                 // ------------------------------------------------
+                openCreationModal() {
+                    this.creationForm = {
+                        name: '', role: '', metaKey: '', metaValue: '',
+                        location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '',
+                        type: 'General Enabler', phone: '', email: '', website: '', tags: ''
+                    };
+                    this.creationModalOpen = true;
+                },
+
+                async executeManualCreation() {
+                    const type = this.activeTab;
+                    let payload = {
+                        name: this.creationForm.name,
+                        tags: this.creationForm.tags,
+                        total_engagements: 0,
+                        latest_engagement: null
+                    };
+
+                    if (type === 'people') {
+                        let parsedMeta = {};
+                        if (this.creationForm.metaKey.trim()) {
+                            const cleanKey = this.creationForm.metaKey.trim().replace(/\s+/g, '_');
+                            parsedMeta[cleanKey] = this.creationForm.metaValue.trim();
+                        }
+                        payload.role = this.creationForm.role || 'Imported Sector Base';
+                        payload.meta = parsedMeta;
+                    } else if (type === 'venues') {
+                        payload.location = this.creationForm.location;
+                        payload.capacity = this.creationForm.capacity;
+                        payload.operating_hours = this.creationForm.operating_hours;
+                        payload.description = this.creationForm.description;
+                        payload.bookings_and_terms = this.creationForm.bookings_and_terms;
+                        payload.remarks = this.creationForm.remarks;
+                    } else if (type === 'ecosystem') {
+                        payload.type = this.creationForm.type;
+                        payload.location = this.creationForm.location;
+                        payload.phone = this.creationForm.phone;
+                        payload.email = this.creationForm.email;
+                        payload.operating_hours = this.creationForm.operating_hours;
+                        payload.website = this.creationForm.website;
+                        payload.description = this.creationForm.description;
+                    }
+
+                    // Cloud Write Transaction Hook
+                    const { data, error } = await supabaseClient.from(type).insert([payload]).select();
+                    if (error) {
+                        console.error("Cloud insert aborted:", error);
+                        alert(`Failed to save manual profile record to Supabase: ${error.message}`);
+                        return;
+                    }
+
+                    // Append directly to reactive collection state engine array
+                    this[type].push(payload);
+                    this.creationModalOpen = false;
+                    alert("Profile record successfully committed and appended across dataset layers.");
+                },
+
                 exportCurrentTable() {
-                    // Pulls whatever data array is active, fully filtered and sorted
                     const targetData = this.filteredData();
                     if (targetData.length === 0) {
                         alert("No records found in the current schema layer to export.");
                         return;
                     }
 
-                    // Extracts schema headers dynamically from first record item shape
                     const properties = Object.keys(targetData[0]).filter(p => p !== 'latest_engagement');
-                    
-                    // Creates CSV data layout lines matrix
                     const csvRows = [];
                     csvRows.push(properties.map(p => `"${p.replace(/"/g, '""')}"`).join(','));
 
@@ -648,7 +821,6 @@
                         csvRows.push(rowValues.join(','));
                     }
 
-                    // Outputs download context link pipeline anchor injection
                     const csvString = csvRows.join('\n');
                     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
                     const downloadUrl = URL.createObjectURL(blob);
@@ -708,7 +880,7 @@
                     this.logs.unshift(logPayload);
                     this.logForm.name = '';
                     this.logForm.notes = '';
-                    alert("Engagement interaction successfully tracked!");
+                    alert("Engagement interaction successfully tracked.");
                 },
     
                 handleFileIntercept(event) {
