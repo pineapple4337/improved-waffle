@@ -321,49 +321,78 @@
     </div>
 
     <script>
-        // REPLACE THESE STRINGS WITH YOUR COPIED API CREDENTIALS
-        const supabaseUrl = 'https://lpgaspucrcrkqclrlarl.supabase.co'; 
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA'; 
+        // ========================================================
+        // SUPABASE CLIENT INITIALIZATION
+        // ========================================================
+        const supabaseUrl = 'https://YOUR-PROJECT-ID.supabase.co'; 
+        const supabaseKey = 'YOUR-ANON-PUBLIC-KEY-STRING'; 
         
-        // Correct initialization instance hook parameters
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
+    
+        // ========================================================
+        // ALPINE.JS CRM CORE APPLICATION ENGINE
+        // ========================================================
         function crmApp() {
             return {
+                // Core UI State Management
                 activeTab: 'people',
                 searchQuery: '',
-                selectedTypeFilter: '', // NEW: Track selected dropdown filter option
+                selectedTypeFilter: '', 
                 modalOpen: false,
                 isEditing: false,
                 selectedItem: null,
                 dropdownOpen: false,
                 
+                // Spreadsheet CSV/XLSX Importer Registry
                 mappingModalOpen: false,
                 uploadedHeaders: [],
                 headerMappings: {},
                 rawInterceptedData: [],
-        
-                logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
-        
+    
+                // Interaction Logger State
+                logForm: { 
+                    category: 'people', 
+                    name: '', 
+                    username: '', 
+                    sentiment: 'Good', 
+                    notes: '' 
+                },
+    
+                // Live Cloud Data Arrays
                 people: [],
                 venues: [],
                 ecosystem: [],
                 logs: [],
-        
-                // Core Init stays exactly the same...
-                async init() { ... },
-        
-                // NEW: Helper to pull unique values from whatever is currently in your Supabase table rows
+    
+                // ------------------------------------------------
+                // 1. ASYNC INITIALIZATION LINK
+                // ------------------------------------------------
+                async init() {
+                    let { data: peopleData } = await supabaseClient.from('people').select('*');
+                    this.people = peopleData || [];
+    
+                    let { data: venuesData } = await supabaseClient.from('venues').select('*');
+                    this.venues = venuesData || [];
+    
+                    let { data: ecosystemData } = await supabaseClient.from('ecosystem').select('*');
+                    this.ecosystem = ecosystemData || [];
+    
+                    let { data: logsData } = await supabaseClient.from('logs').select('*');
+                    this.logs = logsData || [];
+                },
+    
+                // ------------------------------------------------
+                // 2. DATA FILTERING ENGINE
+                // ------------------------------------------------
                 getUniqueTypes() {
                     const types = this.ecosystem.map(item => item.type).filter(Boolean);
                     return [...new Set(types)];
                 },
-        
-                // UPDATED: Filters both by text inputs AND your new dropdown choices
+    
                 filteredData() {
                     let data = this[this.activeTab];
                     
-                    // Apply Ecosystem Dropdown filtering if selected
+                    // Handle dropdown column matching
                     if (this.activeTab === 'ecosystem' && this.selectedTypeFilter) {
                         data = data.filter(i => i.type === this.selectedTypeFilter);
                     }
@@ -379,24 +408,26 @@
                         }
                         return i.name.toLowerCase().includes(query);
                     });
-            
                 },
-
+    
                 sentimentClasses(s) {
                     if (s === 'Good') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
                     if (s === 'Neutral') return 'bg-amber-100 text-amber-800 border-amber-200';
                     return 'bg-rose-100 text-rose-800 border-rose-200';
                 },
-
+    
+                // ------------------------------------------------
+                // 3. PROFILE OPERATIONS & MODALS
+                // ------------------------------------------------
                 openProfile(item) {
                     this.selectedItem = JSON.parse(JSON.stringify(item));
                     this.modalOpen = true;
                 },
-
+    
                 toggleEdit() {
                     this.isEditing = !this.isEditing;
                 },
-
+    
                 async saveChanges() {
                     const db = this[this.activeTab];
                     const index = db.findIndex(i => i.name === this.selectedItem.name);
@@ -408,25 +439,31 @@
                             .from(this.activeTab)
                             .update(this.selectedItem)
                             .eq('name', this.selectedItem.name);
-
+    
                         if (error) {
-                            console.error("Cloud syncing error:", error);
-                            alert("Failed to save changes to Supabase.");
+                            console.error("Cloud sync mismatch error:", error);
+                            alert("Failed to save updates back to cloud storage.");
                             return;
                         }
                     }
                     this.isEditing = false;
-                    alert("Changes successfully saved and synced to the cloud.");
+                    alert("Changes successfully synchronized across active cluster nodes.");
                 },
-
+    
+                // ------------------------------------------------
+                // 4. TRANSACTION LOGGER PATHWAYS
+                // ------------------------------------------------
                 getLogs(name) {
                     return this.logs.filter(l => l.name === name);
                 },
-
+    
                 dropdownResults() {
-                    return this[this.logForm.category].map(i => i.name).filter(n => n.toLowerCase().includes(this.logForm.name.toLowerCase()));
+                    const currentSearch = this.logForm.name ? this.logForm.name.toLowerCase() : '';
+                    return this[this.logForm.category]
+                        .map(i => i.name)
+                        .filter(n => n.toLowerCase().includes(currentSearch));
                 },
-
+    
                 async submitLog() {
                     const now = new Date();
                     const timestamp = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -438,17 +475,17 @@
                         notes: this.logForm.notes,
                         timestamp: timestamp
                     };
-
+    
                     const { error: logError } = await supabaseClient.from('logs').insert([logPayload]);
                     if (logError) {
                         alert("Failed to write transaction log row to cloud database.");
                         return;
                     }
-
+    
                     const db = this[this.logForm.category];
                     const item = db.find(i => i.name === this.logForm.name);
                     if (item) {
-                        item.total_engagements++;
+                        item.total_engagements = (item.total_engagements || 0) + 1;
                         item.latest_engagement = { sentiment: this.logForm.sentiment, username: this.logForm.username };
                         
                         await supabaseClient
@@ -459,18 +496,21 @@
                             })
                             .eq('name', this.logForm.name);
                     }
-
+    
                     this.logs.unshift(logPayload);
                     this.logForm.name = '';
                     this.logForm.notes = '';
                     alert("Engagement interaction successfully tracked.");
                 },
-
+    
+                // ------------------------------------------------
+                // 5. FILE INGESTION PIPELINES
+                // ------------------------------------------------
                 handleFileIntercept(event) {
                     const file = event.target.files[0];
                     if (!file) return;
                     const filename = file.name.toLowerCase();
-
+    
                     if (filename.endsWith('.csv')) {
                         Papa.parse(file, {
                             header: true,
@@ -489,7 +529,7 @@
                         reader.readAsArrayBuffer(file);
                     }
                 },
-
+    
                 prepareMappingInterface(parsedRows) {
                     if (parsedRows.length === 0) return;
                     this.rawInterceptedData = parsedRows;
@@ -519,27 +559,27 @@
                             }
                         }
                     });
-
+    
                     this.mappingModalOpen = true;
                     document.getElementById('fileImporter').value = "";
                 },
-
+    
                 async executeMappedImport() {
                     const type = this.activeTab;
                     const recordsToUpload = [];
-
+    
                     this.rawInterceptedData.forEach(row => {
                         let parsedName = '';
                         let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
                         let legacySector = 'Imported Sector Base';
                         let legacyMeta = {};
-
+    
                         Object.keys(row).forEach(header => {
                             const destination = this.headerMappings[header];
                             if (!destination || destination === 'ignore') return;
-
+    
                             const cellValue = String(row[header]).trim();
-
+    
                             if (destination === 'name') {
                                 parsedName = cellValue;
                             } else if (type === 'ecosystem') {
@@ -552,7 +592,7 @@
                                 }
                             }
                         });
-
+    
                         if (parsedName) {
                             const itemPayload = type === 'ecosystem' 
                                 ? { name: parsedName, ...ecoData, total_engagements: 0, latest_engagement: null }
@@ -560,21 +600,21 @@
                             recordsToUpload.push(itemPayload);
                         }
                     });
-
+    
                     if (recordsToUpload.length > 0) {
                         const { error } = await supabaseClient.from(type).insert(recordsToUpload);
                         if (error) {
-                            console.error("Cloud insert error:", error);
+                            console.error("Cloud ingestion aborted:", error);
                             alert("Failed to batch import rows to Supabase.");
                             return;
                         }
                         this[type].push(...recordsToUpload);
                     }
-
+    
                     this.mappingModalOpen = false;
-                    alert(`Import complete. Synchronised records with cloud database.`);
+                    alert(`Import complete. Data successfully synchronized across available nodes.`);
                 }
-            }
+            };
         }
     </script>
 </body>
