@@ -56,7 +56,7 @@
                             class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium text-gray-600">
                             <option value="">All Types</option>
                             <template x-for="t in getUniqueTypes()" :key="t">
-                                <button><option :value="t" x-text="t"></option></button>
+                                <option :value="t" x-text="t"></option>
                             </template>
                         </select>
                     </div>
@@ -379,6 +379,7 @@
                         }
                         return i.name.toLowerCase().includes(query);
                     });
+            
                 },
 
                 sentimentClasses(s) {
