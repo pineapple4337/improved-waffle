@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data=\"crmApp()\">
 
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
@@ -228,8 +228,8 @@
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Create New Record Profile</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Manually input profile data fields to synchronize directly to <span class="uppercase font-semibold text-indigo-600" x-text="activeTab"></span> storage layer.</p>
+                    <h3 class="text-lg font-bold text-gray-900">Create/Update Record Profile</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Input profile data fields to synchronize directly to <span class="uppercase font-semibold text-indigo-600" x-text="activeTab"></span> storage layer.</p>
                 </div>
                 <button @click="creationModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -344,7 +344,7 @@
 
                 <div class="pt-4 border-t flex justify-end space-x-3">
                     <button type="button" @click="creationModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Save To Database</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Save Record</button>
                 </div>
             </form>
         </div>
@@ -409,7 +409,7 @@
             
             <div class="px-8 py-6 bg-gray-50 border-b flex justify-between items-center">
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span >
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span>
                     <h2 class="text-3xl font-black text-gray-900" x-text="selectedItem?.name"></h2>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -830,16 +830,29 @@
                         payload.description = this.creationForm.description;
                     }
 
-                    const { data, error } = await supabaseClient.from(type).insert([payload]).select();
+                    // Handled Deconfliction: Replaced .insert() with .upsert() matching on unique index 'name'
+                    const { data, error } = await supabaseClient
+                        .from(type)
+                        .upsert([payload], { onConflict: 'name' })
+                        .select();
+
                     if (error) {
-                        console.error("Cloud insert aborted:", error);
-                        alert(`Failed to save manual profile record to Supabase: ${error.message}`);
+                        console.error("Cloud insert/upsert aborted:", error);
+                        alert(`Failed to save record to Supabase: ${error.message}`);
                         return;
                     }
 
-                    this[type].push(payload);
+                    // Seamless local state synchronicity handling matching UI layers
+                    const existingIndex = this[type].findIndex(i => i.name === payload.name);
+                    if (existingIndex !== -1) {
+                        this[type][existingIndex] = payload;
+                        alert("Existing profile match detected. Record successfully updated across dataset layers.");
+                    } else {
+                        this[type].push(payload);
+                        alert("Profile record successfully committed and appended across dataset layers.");
+                    }
+
                     this.creationModalOpen = false;
-                    alert("Profile record successfully committed and appended across dataset layers.");
                 },
 
                 exportCurrentTable() {
@@ -1043,14 +1056,27 @@
                         }
                     });
     
+                    // Handled Bulk Ingestion Deconfliction: Swapped out raw .insert for a batch conflict resolution statement
                     if (recordsToUpload.length > 0) {
-                        const { error } = await supabaseClient.from(type).insert(recordsToUpload);
+                        const { error } = await supabaseClient
+                            .from(type)
+                            .upsert(recordsToUpload, { onConflict: 'name' });
+
                         if (error) {
                             console.error("Cloud ingestion aborted:", error);
                             alert("Failed to batch import rows to Supabase.");
                             return;
                         }
-                        this[type].push(...recordsToUpload);
+
+                        // Seamless local UI tracking array update handling 
+                        recordsToUpload.forEach(newRecord => {
+                            const localIndex = this[type].findIndex(i => i.name === newRecord.name);
+                            if (localIndex !== -1) {
+                                this[type][localIndex] = newRecord;
+                            } else {
+                                this[type].push(newRecord);
+                            }
+                        });
                     }
     
                     this.mappingModalOpen = false;
