@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Database CRM | People, Venues & Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
+                <span class="font-bold text-lg tracking-tight">VibeCRM v5</span>
+            </div>
+            
+            <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+                <template x-for="tab in ['People', 'Venues', 'Ecosystem', 'Logger']">
+                    <button 
+                        @click="activeTab = tab.toLowerCase()"
+                        :class="activeTab === tab.toLowerCase() ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                        class="px-4 py-2 font-medium text-xs rounded-lg transition-all duration-150 uppercase tracking-wider"
+                        x-text="tab === 'Logger' ? 'Log Engagement' : tab">
+                    </button>
+                </template>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div x-show="['people', 'venues', 'ecosystem'].includes(activeTab)" x-transition class="space-y-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <div class="relative flex-1 max-w-md">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input 
+                        type="text" 
+                        x-model="searchQuery"
+                        :placeholder="'Search ' + activeTab + '...'" 
+                        class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span>Import <span class="capitalize" x-text="activeTab"></span></span>
+                        <input type="file" accept=".csv, .xlsx" class="hidden" @change="handleFileImport($event)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
+                        <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px]">
+                            <tr>
+                                <th class="w-1/3 px-6 py-4">Name</th>
+                                <th class="w-1/4 px-6 py-4" x-text="activeTab === 'people' ? 'Role' : 'Type/Sector'"></th>
+                                <th class="w-1/6 px-6 py-4 text-center">Engagements</th>
+                                <th class="w-1/4 px-6 py-4">Latest Sentiment</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <template x-for="item in filteredData()" :key="item.name">
+                                <tr @click="openProfile(item)" class="hover:bg-indigo-50/40 cursor-pointer transition">
+                                    <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
+                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="item.industry || item.role"></td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
+                                    </td>
+                                    <td class="px-6 py-4 truncate">
+                                        <template x-if="item.latest_engagement">
+                                            <span :class="sentimentClasses(item.latest_engagement.sentiment)" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase" x-text="item.latest_engagement.sentiment"></span>
+                                        </template>
+                                        <span x-show="!item.latest_engagement" class="text-gray-300 italic text-xs">None</span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto">
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-gray-900">Log Engagement</h2>
+                
+                <form @submit.prevent="submitLog()" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Category *</label>
+                        <select x-model="logForm.category" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                            <option value="people">People</option>
+                            <option value="venues">Venues</option>
+                            <option value="ecosystem">Ecosystem Enablers</option>
+                        </select>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Name *</label>
+                        <input type="text" x-model="logForm.name" @focus="dropdownOpen = true" @click.away="dropdownOpen = false" placeholder="Search existing entry..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                        
+                        <div x-show="dropdownOpen && dropdownResults().length > 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                            <template x-for="res in dropdownResults()">
+                                <button @click="logForm.name = res; dropdownOpen = false" type="button" class="w-full text-left px-4 py-2 hover:bg-indigo-50 text-sm" x-text="res"></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Officer Handle *</label>
+                            <input type="text" x-model="logForm.username" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Sentiment *</label>
+                            <div class="flex space-x-2">
+                                <template x-for="s in ['Good', 'Neutral', 'Bad']">
+                                    <button type="button" @click="logForm.sentiment = s" :class="logForm.sentiment === s ? sentimentClasses(s) : 'bg-gray-100 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition" x-text="s"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Engagement Notes</label>
+                        <textarea x-model="logForm.notes" rows="4" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 shadow-lg transition">Submit Log Entry</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div x-show="modalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" @click.away="if(!isEditing) modalOpen = false">
+            
+            <div class="px-8 py-6 bg-gray-50 border-b flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab"></span>
+                    <h2 class="text-3xl font-black text-gray-900" x-text="selectedItem?.name"></h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button @click="toggleEdit()" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-50 transition" x-text="isEditing ? 'Cancel' : 'Edit Profile'"></button>
+                    <button x-show="isEditing" @click="saveChanges()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-700 transition">Save Changes</button>
+                    <button @click="modalOpen = false; isEditing = false" class="text-gray-400 hover:text-gray-600 p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-8 grid grid-cols-3 gap-8">
+                <div class="col-span-1 space-y-6">
+                    <div class="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes</h3>
+                        <div class="space-y-4">
+                            <template x-for="(val, key) in selectedItem" :key="key">
+                                <div x-show="!['total_engagements', 'latest_engagement', 'meta'].includes(key)">
+                                    <label class="block text-[10px] text-gray-400 uppercase mb-1" x-text="key.replace('_', ' ')"></label>
+                                    <template x-if="!isEditing">
+                                        <p class="font-bold text-gray-900" x-text="val || '—'"></p>
+                                    </template>
+                                    <template x-if="isEditing">
+                                        <input type="text" x-model="selectedItem[key]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm">
+                                    </template>
+                                </div>
+                            </template>
+                            
+                            <template x-for="(val, key) in selectedItem?.meta" :key="key">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 uppercase mb-1" x-text="key.replace('_', ' ')"></label>
+                                    <template x-if="!isEditing">
+                                        <p class="font-bold text-gray-900" x-text="val || '—'"></p>
+                                    </template>
+                                    <template x-if="isEditing">
+                                        <input type="text" x-model="selectedItem.meta[key]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm">
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-2 space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction Timeline</h3>
+                    <div class="space-y-3">
+                        <template x-for="log in getLogs(selectedItem?.name)" :key="log.timestamp">
+                            <div class="p-4 bg-white border rounded-xl shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <span :class="sentimentClasses(log.sentiment)" class="px-2 py-0.5 rounded text-[9px] font-black uppercase" x-text="log.sentiment"></span>
+                                        <span class="text-xs font-mono text-gray-400" x-text="'@' + log.username"></span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-400" x-text="log.timestamp"></span>
+                                </div>
+                                <p class="text-sm italic text-gray-600" x-text="log.notes || 'No notes provided'"></p>
+                            </div>
+                        </template>
+                        <template x-if="getLogs(selectedItem?.name).length === 0">
+                            <p class="text-center py-12 text-gray-400 italic text-sm">No engagement history found for this entry.</p>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function crmApp() {
+            return {
+                activeTab: 'people',
+                searchQuery: '',
+                modalOpen: false,
+                isEditing: false,
+                selectedItem: null,
+                dropdownOpen: false,
+                
+                logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
+
+                // Data Structures
+                people: [
+                    { name: "John Smith", role: "Policy Lead", total_engagements: 1, latest_engagement: { sentiment: "Good", username: "Admin" }, meta: { Office: "HQ", Level: "Senior" } }
+                ],
+                venues: [
+                    { name: "City Hall Hall", industry: "Government", total_engagements: 0, latest_engagement: null, meta: { Capacity: "500", Location: "Central" } }
+                ],
+                ecosystem: [
+                    { name: "Tech Accelerator", industry: "VC/Incubator", total_engagements: 0, latest_engagement: null, meta: { Focus: "FinTech" } }
+                ],
+                logs: [],
+
+                // Logic
+                filteredData() {
+                    const data = this[this.activeTab];
+                    if (!this.searchQuery) return data;
+                    return data.filter(i => i.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                },
+
+                sentimentClasses(s) {
+                    if (s === 'Good') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                    if (s === 'Neutral') return 'bg-amber-100 text-amber-800 border-amber-200';
+                    return 'bg-rose-100 text-rose-800 border-rose-200';
+                },
+
+                openProfile(item) {
+                    this.selectedItem = JSON.parse(JSON.stringify(item)); // Deep copy for cancelable edits
+                    this.modalOpen = true;
+                },
+
+                toggleEdit() {
+                    if (this.isEditing) {
+                        // If cancelling, revert to original (this is simplified as we'd need the original ref)
+                        this.modalOpen = false;
+                    }
+                    this.isEditing = !this.isEditing;
+                },
+
+                saveChanges() {
+                    const db = this[this.activeTab];
+                    const index = db.findIndex(i => i.name === this.selectedItem.name);
+                    if (index !== -1) {
+                        db[index] = JSON.parse(JSON.stringify(this.selectedItem));
+                    }
+                    this.isEditing = false;
+                    alert("Changes saved to the localised database.");
+                },
+
+                getLogs(name) {
+                    return this.logs.filter(l => l.name === name);
+                },
+
+                dropdownResults() {
+                    return this[this.logForm.category].map(i => i.name).filter(n => n.toLowerCase().includes(this.logForm.name.toLowerCase()));
+                },
+
+                submitLog() {
+                    const now = new Date();
+                    const timestamp = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
+                    
+                    const logEntry = { ...this.logForm, timestamp };
+                    this.logs.unshift(logEntry);
+
+                    // Update count & latest in db
+                    const db = this[this.logForm.category];
+                    const item = db.find(i => i.name === this.logForm.name);
+                    if (item) {
+                        item.total_engagements++;
+                        item.latest_engagement = { sentiment: this.logForm.sentiment, username: this.logForm.username };
+                    } else {
+                        // Create new if doesn't exist
+                        db.push({ name: this.logForm.name, industry: 'New Entry', total_engagements: 1, latest_engagement: { sentiment: this.logForm.sentiment, username: this.logForm.username }, meta: {} });
+                    }
+
+                    this.logForm.name = '';
+                    this.logForm.notes = '';
+                    alert("Engagement logged successfully.");
+                },
+
+                handleFileImport(event) {
+                    const file = event.target.files[0];
+                    const type = this.activeTab;
+                    Papa.parse(file, {
+                        header: true,
+                        complete: (results) => {
+                            results.data.forEach(row => {
+                                if (row.name) {
+                                    this[type].push({
+                                        name: row.name,
+                                        industry: row.industry || row.role || 'Imported',
+                                        total_engagements: 0,
+                                        latest_engagement: null,
+                                        meta: row
+                                    });
+                                }
+                            });
+                            alert(`Imported to ${type} database.`);
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
