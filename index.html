@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Database CRM | Cloud Synchronization Hub</title>
+    <title>Resource List v2.1</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,8 +16,8 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
-                <span class="font-bold text-lg tracking-tight">VibeCRM v8</span>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">R</div>
+                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
@@ -109,7 +109,7 @@
                                         <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="w-1/6 px-4 py-4">Tags Base</th>
+                                <th class="w-1/6 px-4 py-4">Tags</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -585,7 +585,7 @@
                         }
                     }
                     this.isEditing = false;
-                    alert("Changes successfully synchronized across active cluster nodes.");
+                    alert("Changes saved!");
                 },
 
                 // ------------------------------------------------
@@ -838,7 +838,7 @@
                     }
     
                     this.mappingModalOpen = false;
-                    alert(`Import complete. Data successfully synchronized across available nodes.`);
+                    alert(`Import complete!`);
                 }
             };
         }
