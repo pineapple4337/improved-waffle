@@ -79,35 +79,37 @@
                     <table class="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
                         <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px] select-none">
                             <tr>
-                                <th @click="sortBy('name')" class="w-1/3 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                <th @click="sortBy('name')" class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition">
                                     <div class="flex items-center space-x-1">
                                         <span>Name</span>
                                         <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
                                 
-                                <th @click="sortBy('type')" class="w-1/4 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    @click="sortBy(activeTab === 'people' ? 'role' : (activeTab === 'ecosystem' ? 'type' : 'location'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'people' ? 'Role' : 'Type'"></span>
-                                        <span x-show="sortColumn === 'type'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                        <span x-text="activeTab === 'people' ? 'Role' : (activeTab === 'ecosystem' ? 'Type' : 'Location')"></span>
+                                        <span x-show="['role', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
                                 
-                                <th @click="sortBy('location')" class="w-1/4 px-6 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
+                                    @click="sortBy(activeTab === 'people' ? 'meta' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : 'Location'"></span>
-                                        <span x-show="sortColumn === 'location'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : (activeTab === 'ecosystem' ? 'Location' : 'Capacity')"></span>
+                                        <span x-show="['meta', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
                                 
-                                <th @click="sortBy('total_engagements')" class="w-1/6 px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition">
+                                <th @click="sortBy('total_engagements')" class="w-1/12 px-4 py-4 text-center cursor-pointer hover:bg-gray-100 transition">
                                     <div class="flex items-center justify-center space-x-1">
                                         <span>Engagements</span>
                                         <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
                                 
-                                <th class="w-1/4 px-6 py-4">Latest Sentiment</th>
+                                <th class="w-1/6 px-4 py-4">Latest Sentiment</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -115,8 +117,8 @@
                                 <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-indigo-50/50 cursor-pointer transition">
                                     <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
                                     
-                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="item.role || item.type || '—'"></td>
-                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (item.location || '—')"></td>
+                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? item.role : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
+                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (activeTab === 'ecosystem' ? item.location : item.capacity || '—')"></td>
                                     
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
@@ -164,9 +166,12 @@
                     </div>
                 </div>
             </div>
-        </div> <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto" style="display: none;">
+        </div> 
+
+        <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto" style="display: none;">
             <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-gray-900">Log Engagement Interaction</h2>
+                
                 <form @submit.prevent="submitLog()" class="space-y-5">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Target Category Base *</label>
@@ -242,17 +247,21 @@
                                     <option value="ignore">Skip / Ignore Column</option>
                                     <option value="name">Core Field: Name</option>
                                     <option value="role" x-show="activeTab === 'people'">Core Field: Role</option>
-                                    <option value="industry" x-show="activeTab === 'venues'">Core Field: Type / Sector</option>
-                                    
-                                    <option value="location" x-show="activeTab === 'ecosystem'">Ecosystem Field: Location</option>
-                                    <option value="phone" x-show="activeTab === 'ecosystem'">Ecosystem Field: Phone</option>
-                                    <option value="email" x-show="activeTab === 'ecosystem'">Ecosystem Field: Email</option>
-                                    <option value="operating_hours" x-show="activeTab === 'ecosystem'">Ecosystem Field: Operating Hours</option>
-                                    <option value="website" x-show="activeTab === 'ecosystem'">Ecosystem Field: Website</option>
-                                    <option value="description" x-show="activeTab === 'ecosystem'">Ecosystem Field: Description</option>
                                     <option value="type" x-show="activeTab === 'ecosystem'">Ecosystem Field: Type</option>
                                     
-                                    <option value="meta_custom" x-show="activeTab !== 'ecosystem'">Secondary Metadata Attribute</option>
+                                    <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Location</option>
+                                    <option value="capacity" x-show="activeTab === 'venues'">Venue Field: Capacity</option>
+                                    <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Operating Hours</option>
+                                    <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Description</option>
+                                    <option value="bookings_and_terms" x-show="activeTab === 'venues'">Venue Field: Bookings & Terms</option>
+                                    <option value="tags" x-show="activeTab === 'venues'">Venue Field: Tags</option>
+                                    <option value="remarks" x-show="activeTab === 'venues'">Venue Field: Remarks</option>
+
+                                    <option value="phone" x-show="activeTab === 'ecosystem'">Ecosystem Field: Phone</option>
+                                    <option value="email" x-show="activeTab === 'ecosystem'">Ecosystem Field: Email</option>
+                                    <option value="website" x-show="activeTab === 'ecosystem'">Ecosystem Field: Website</option>
+                                    
+                                    <option value="meta_custom" x-show="activeTab === 'people'">Secondary Metadata Attribute</option>
                                 </select>
                             </div>
                         </div>
@@ -272,7 +281,7 @@
             
             <div class="px-8 py-6 bg-gray-50 border-b flex justify-between items-center">
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resources Base' : activeTab"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span>
                     <h2 class="text-3xl font-black text-gray-900" x-text="selectedItem?.name"></h2>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -290,11 +299,11 @@
                         <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes Schema</h3>
                         
                         <div class="space-y-4">
-                            <template x-if="activeTab === 'ecosystem'">
+                            <template x-if="['ecosystem', 'venues'].includes(activeTab)">
                                 <div class="space-y-3">
-                                    <template x-for="field in ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description']">
+                                    <template x-for="field in (activeTab === 'ecosystem' ? ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description'] : ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'tags', 'remarks'])">
                                         <div>
-                                            <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace('_', ' ')"></label>
+                                            <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
                                             <template x-if="!isEditing">
                                                 <p class="font-semibold text-gray-900 break-words" x-text="selectedItem[field] || '—'"></p>
                                             </template>
@@ -306,7 +315,7 @@
                                 </div>
                             </template>
 
-                            <template x-if="activeTab !== 'ecosystem'">
+                            <template x-if="activeTab === 'people'">
                                 <div class="space-y-4">
                                     <template x-for="(val, key) in selectedItem" :key="key">
                                         <div x-show="!['total_engagements', 'latest_engagement', 'meta'].includes(key)">
@@ -477,9 +486,17 @@
                             valA = a.role || a.type || '';
                             valB = b.role || b.type || '';
                         }
-                        if (this.sortColumn === 'location' || this.sortColumn === 'meta') {
-                            valA = this.activeTab === 'people' ? (a.meta && Object.values(a.meta)[0] ? Object.values(a.meta)[0] : '') : (a.location || '');
-                            valB = this.activeTab === 'people' ? (b.meta && Object.values(b.meta)[0] ? Object.values(b.meta)[0] : '') : (b.location || '');
+                        if (this.sortColumn === 'location' || this.sortColumn === 'meta' || this.sortColumn === 'capacity') {
+                            if (this.activeTab === 'people') {
+                                valA = (a.meta && Object.values(a.meta)[0]) ? Object.values(a.meta)[0] : '';
+                                valB = (b.meta && Object.values(b.meta)[0]) ? Object.values(b.meta)[0] : '';
+                            } else if (this.activeTab === 'venues') {
+                                valA = this.sortColumn === 'capacity' ? (a.capacity || 0) : (a.location || '');
+                                valB = this.sortColumn === 'capacity' ? (b.capacity || 0) : (b.location || '');
+                            } else {
+                                valA = a.location || '';
+                                valB = b.location || '';
+                            }
                         }
     
                         if (typeof valA === 'number' && typeof valB === 'number') {
@@ -646,10 +663,19 @@
                             else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
                             else if (/type|category/i.test(clean)) this.headerMappings[h] = 'type';
                             else this.headerMappings[h] = 'ignore';
+                        } else if (this.activeTab === 'venues') {
+                            if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
+                            else if (/capacity|size|max/i.test(clean)) this.headerMappings[h] = 'capacity';
+                            else if (/hour|operating|time|open/i.test(clean)) this.headerMappings[h] = 'operating_hours';
+                            else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
+                            else if (/booking|terms|rule/i.test(clean)) this.headerMappings[h] = 'bookings_and_terms';
+                            else if (/tag/i.test(clean)) this.headerMappings[h] = 'tags';
+                            else if (/remark|note/i.test(clean)) this.headerMappings[h] = 'remarks';
+                            else this.headerMappings[h] = 'ignore';
                         } else {
                             if (/industry|sector|type/i.test(clean)) {
-                                this.headerMappings[h] = this.activeTab === 'people' ? 'role' : 'industry';
-                            } else if (/role|job|title/i.test(clean) && this.activeTab === 'people') {
+                                this.headerMappings[h] = 'role';
+                            } else if (/role|job|title/i.test(clean)) {
                                 this.headerMappings[h] = 'role';
                             } else {
                                 this.headerMappings[h] = 'meta_custom';
@@ -668,6 +694,7 @@
                     this.rawInterceptedData.forEach(row => {
                         let parsedName = '';
                         let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
+                        let venueData = { location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', tags: '', remarks: '' };
                         let legacySector = 'Imported Sector Base';
                         let legacyMeta = {};
     
@@ -681,6 +708,10 @@
                                 parsedName = cellValue;
                             } else if (type === 'ecosystem') {
                                 if (destination in ecoData) ecoData[destination] = cellValue;
+                            } else if (type === 'venues') {
+                                if (destination in venueData) {
+                                    venueData[destination] = destination === 'capacity' ? (parseInt(cellValue, 10) || cellValue) : cellValue;
+                                }
                             } else {
                                 if (destination === 'industry' || destination === 'role') legacySector = cellValue;
                                 else if (destination === 'meta_custom') {
@@ -691,9 +722,14 @@
                         });
     
                         if (parsedName) {
-                            const itemPayload = type === 'ecosystem' 
-                                ? { name: parsedName, ...ecoData, total_engagements: 0, latest_engagement: null }
-                                : { name: parsedName, [type === 'people' ? 'role' : 'industry']: legacySector, total_engagements: 0, latest_engagement: null, meta: legacyMeta };
+                            let itemPayload = { name: parsedName, total_engagements: 0, latest_engagement: null };
+                            if (type === 'ecosystem') {
+                                itemPayload = { ...itemPayload, ...ecoData };
+                            } else if (type === 'venues') {
+                                itemPayload = { ...itemPayload, ...venueData };
+                            } else {
+                                itemPayload = { ...itemPayload, role: legacySector, meta: legacyMeta };
+                            }
                             recordsToUpload.push(itemPayload);
                         }
                     });
