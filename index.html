@@ -132,7 +132,9 @@
                         </tbody>
                     </table>
                 </div>
-            </div> <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mt-4">
+            </div> 
+            
+            <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mt-4">
                 <div class="flex flex-1 justify-between sm:hidden">
                     <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Previous</button>
                     <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Next</button>
@@ -151,41 +153,20 @@
                     </div>
                     <div>
                         <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-2" aria-label="Pagination">
-                            <button 
-                                @click="currentPage = 1" 
-                                :disabled="currentPage === 1"
-                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
-                                First
-                            </button>
-                            <button 
-                                @click="currentPage > 1 ? currentPage-- : null" 
-                                :disabled="currentPage === 1"
-                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
-                                Prev
-                            </button>
+                            <button @click="currentPage = 1" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">First</button>
+                            <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Prev</button>
                             <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border border-gray-300 rounded-lg">
                                 Page <span class="mx-1 text-indigo-600" x-text="currentPage"></span> of <span class="ml-1" x-text="totalPages()"></span>
                             </span>
-                            <button 
-                                @click="currentPage < totalPages() ? currentPage++ : null" 
-                                :disabled="currentPage === totalPages()"
-                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
-                                Next
-                            </button>
-                            <button 
-                                @click="currentPage = totalPages()" 
-                                :disabled="currentPage === totalPages()"
-                                class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">
-                                Last
-                            </button>
+                            <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Next</button>
+                            <button @click="currentPage = totalPages()" :disabled="currentPage === totalPages()" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Last</button>
                         </nav>
                     </div>
                 </div>
             </div>
-        <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto">
+        </div> <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto" style="display: none;">
             <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-gray-900">Log Engagement Interaction</h2>
-                
                 <form @submit.prevent="submitLog()" class="space-y-5">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Target Category Base *</label>
