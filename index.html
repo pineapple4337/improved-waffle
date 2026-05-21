@@ -292,7 +292,7 @@
             <div class="flex-1 overflow-y-auto p-8 grid grid-cols-3 gap-8">
                 <div class="col-span-1 space-y-6">
                     <div class="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes Schema</h3>
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Details</h3>
                         
                         <div class="space-y-4">
                             <template x-if="['ecosystem', 'venues'].includes(activeTab)">
@@ -342,7 +342,7 @@
                     </div>
 
                     <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Assigned Category Targets</h3>
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Tags</h3>
                         
                         <div class="flex flex-wrap gap-1.5 mb-4">
                             <template x-for="tag in getArrayFromTags(selectedItem?.tags)" :key="tag">
@@ -394,7 +394,7 @@
                 </div>
 
                 <div class="col-span-2 space-y-4">
-                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction Timeline Ledger</h3>
+                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction History</h3>
                     <div class="space-y-3">
                         <template x-for="log in getLogs(selectedItem?.name)" :key="log.timestamp">
                             <div class="p-4 bg-white border rounded-xl shadow-sm space-y-2">
@@ -708,7 +708,7 @@
                     this.logs.unshift(logPayload);
                     this.logForm.name = '';
                     this.logForm.notes = '';
-                    alert("Engagement interaction successfully tracked.");
+                    alert("Engagement interaction successfully tracked!");
                 },
     
                 handleFileIntercept(event) {
