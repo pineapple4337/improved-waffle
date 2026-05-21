@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spongebob's Pineapple</title>
+    <title>Multi-Database CRM | Cloud Synchronization Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,8 +16,8 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">R</div>
-                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
+                <span class="font-bold text-lg tracking-tight">VibeCRM v8</span>
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
@@ -40,7 +40,6 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
                 
                 <div class="flex flex-col sm:flex-row flex-1 gap-3 max-w-2xl">
-                    
                     <div class="relative flex-1">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -64,12 +63,10 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center space-x-3">
-                    <button 
-                        @click="exportCurrentTable()" 
-                        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
+                <div class="flex items-center space-x-2">
+                    <button @click="exportCurrentTable()" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
                         <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <span>Export Grid</span>
+                        <span>Export CSV</span>
                     </button>
 
                     <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition">
@@ -92,7 +89,6 @@
                                         <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                
                                 <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
                                     @click="sortBy(activeTab === 'people' ? 'role' : (activeTab === 'ecosystem' ? 'type' : 'location'))">
                                     <div class="flex items-center space-x-1">
@@ -100,7 +96,6 @@
                                         <span x-show="['role', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                
                                 <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
                                     @click="sortBy(activeTab === 'people' ? 'meta' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
@@ -108,33 +103,31 @@
                                         <span x-show="['meta', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                
                                 <th @click="sortBy('total_engagements')" class="w-1/12 px-4 py-4 text-center cursor-pointer hover:bg-gray-100 transition">
                                     <div class="flex items-center justify-center space-x-1">
                                         <span>Engagements</span>
                                         <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                
-                                <th class="w-1/6 px-4 py-4">Latest Sentiment</th>
+                                <th class="w-1/6 px-4 py-4">Tags Base</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <template x-for="item in paginatedData()" :key="item.name">
                                 <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-indigo-50/50 cursor-pointer transition">
                                     <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
-                                    
                                     <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? item.role : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
                                     <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (activeTab === 'ecosystem' ? item.location : item.capacity || '—')"></td>
-                                    
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
                                     </td>
-                                    <td class="px-6 py-4 truncate">
-                                        <template x-if="item.latest_engagement">
-                                            <span :class="sentimentClasses(item.latest_engagement.sentiment)" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase" x-text="item.latest_engagement.sentiment"></span>
-                                        </template>
-                                        <span x-show="!item.latest_engagement" class="text-gray-300 italic text-xs">No historical logs</span>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-1 max-w-[200px] overflow-hidden">
+                                            <template x-for="tag in getArrayFromTags(item.tags)" :key="tag">
+                                                <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[9px] font-medium border border-indigo-100" x-text="tag"></span>
+                                            </template>
+                                            <span x-show="!item.tags || getArrayFromTags(item.tags).length === 0" class="text-gray-300 text-xs italic">None</span>
+                                        </div>
                                     </td>
                                 </tr>
                             </template>
@@ -228,7 +221,6 @@
 
     <div x-show="mappingModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Map Spreadsheet Headers</h3>
@@ -255,19 +247,16 @@
                                     <option value="name">Core Field: Name</option>
                                     <option value="role" x-show="activeTab === 'people'">Core Field: Role</option>
                                     <option value="type" x-show="activeTab === 'ecosystem'">Ecosystem Field: Type</option>
-                                    
                                     <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Location</option>
                                     <option value="capacity" x-show="activeTab === 'venues'">Venue Field: Capacity</option>
                                     <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Operating Hours</option>
                                     <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Description</option>
                                     <option value="bookings_and_terms" x-show="activeTab === 'venues'">Venue Field: Bookings & Terms</option>
-                                    <option value="tags" x-show="activeTab === 'venues'">Venue Field: Tags</option>
+                                    <option value="tags" x-show="['people', 'venues', 'ecosystem'].includes(activeTab)">Field: Tags (Comma Separated)</option>
                                     <option value="remarks" x-show="activeTab === 'venues'">Venue Field: Remarks</option>
-
                                     <option value="phone" x-show="activeTab === 'ecosystem'">Ecosystem Field: Phone</option>
                                     <option value="email" x-show="activeTab === 'ecosystem'">Ecosystem Field: Email</option>
                                     <option value="website" x-show="activeTab === 'ecosystem'">Ecosystem Field: Website</option>
-                                    
                                     <option value="meta_custom" x-show="activeTab === 'people'">Secondary Metadata Attribute</option>
                                 </select>
                             </div>
@@ -288,7 +277,7 @@
             
             <div class="px-8 py-6 bg-gray-50 border-b flex justify-between items-center">
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span >
                     <h2 class="text-3xl font-black text-gray-900" x-text="selectedItem?.name"></h2>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -308,7 +297,7 @@
                         <div class="space-y-4">
                             <template x-if="['ecosystem', 'venues'].includes(activeTab)">
                                 <div class="space-y-3">
-                                    <template x-for="field in (activeTab === 'ecosystem' ? ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description'] : ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'tags', 'remarks'])">
+                                    <template x-for="field in (activeTab === 'ecosystem' ? ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description'] : ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'remarks'])">
                                         <div>
                                             <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
                                             <template x-if="!isEditing">
@@ -325,7 +314,7 @@
                             <template x-if="activeTab === 'people'">
                                 <div class="space-y-4">
                                     <template x-for="(val, key) in selectedItem" :key="key">
-                                        <div x-show="!['total_engagements', 'latest_engagement', 'meta'].includes(key)">
+                                        <div x-show="!['total_engagements', 'latest_engagement', 'meta', 'tags'].includes(key)">
                                             <label class="block text-[10px] text-gray-400 uppercase mb-1" x-text="key.replace('_', ' ')"></label>
                                             <template x-if="!isEditing">
                                                 <p class="font-bold text-gray-900" x-text="val || '—'"></p>
@@ -350,7 +339,57 @@
                                 </div>
                             </template>
                         </div>
+                    </div>
 
+                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Assigned Category Targets</h3>
+                        
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <template x-for="tag in getArrayFromTags(selectedItem?.tags)" :key="tag">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-indigo-600 text-white text-xs font-semibold shadow-sm">
+                                    <span x-text="tag"></span>
+                                    <button x-show="isEditing" @click="removeTag(tag)" class="ml-1.5 focus:outline-none hover:text-indigo-200 text-[10px] font-black">×</button>
+                                </span>
+                            </template>
+                            <template x-if="getArrayFromTags(selectedItem?.tags).length === 0">
+                                <span class="text-xs text-gray-400 italic">No segment classifications assigned yet.</span>
+                            </template>
+                        </div>
+
+                        <div x-show="isEditing" class="space-y-4 pt-3 border-t border-gray-200" x-transition>
+                            <div>
+                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preset Groupings Selection</label>
+                                <div class="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1 bg-white border rounded-lg">
+                                    <template x-for="preset in availablePresets" :key="preset">
+                                        <button 
+                                            type="button"
+                                            @click="addTag(preset)"
+                                            :disabled="getArrayFromTags(selectedItem?.tags).includes(preset)"
+                                            class="px-2 py-1 text-[10px] font-medium rounded border border-gray-200 bg-gray-50 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 disabled:opacity-40 text-left truncate transition"
+                                            x-text="'+ ' + preset">
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Create Custom Specification Tag</label>
+                                <div class="flex space-x-1">
+                                    <input 
+                                        type="text" 
+                                        x-model="newTagInput" 
+                                        @keydown.enter.prevent="addCustomTagField()"
+                                        placeholder="Add custom descriptor label..." 
+                                        class="flex-1 min-w-0 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                    <button 
+                                        type="button" 
+                                        @click="addCustomTagField()"
+                                        class="px-2.5 py-1 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-900 transition">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -404,18 +443,20 @@
                 headerMappings: {},
                 rawInterceptedData: [],
     
-                logForm: { 
-                    category: 'people', 
-                    name: '', 
-                    username: '', 
-                    sentiment: 'Good', 
-                    notes: '' 
-                },
+                logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
     
                 people: [],
                 venues: [],
                 ecosystem: [],
                 logs: [],
+
+                // Explicitly declared target tags baseline registries
+                newTagInput: '',
+                availablePresets: [
+                    'Seniors', 'Children & Youth', 'Families', 
+                    'Persons with Disabilities', 'Mental Health', 
+                    'Low-income', 'Caregivers', 'Crisis & Protection'
+                ],
     
                 async init() {
                     let { data: peopleData } = await supabaseClient.from('people').select('*');
@@ -456,12 +497,14 @@
                     if (this.searchQuery.trim()) {
                         const query = this.searchQuery.toLowerCase();
                         data = data.filter(i => {
+                            const tagsStr = i.tags ? String(i.tags).toLowerCase() : '';
                             if (this.activeTab === 'ecosystem' || this.activeTab === 'venues') {
                                 return i.name.toLowerCase().includes(query) || 
                                        (i.type && i.type.toLowerCase().includes(query)) ||
-                                       (i.location && i.location.toLowerCase().includes(query));
+                                       (i.location && i.location.toLowerCase().includes(query)) ||
+                                       tagsStr.includes(query);
                             }
-                            return i.name.toLowerCase().includes(query);
+                            return i.name.toLowerCase().includes(query) || tagsStr.includes(query);
                         });
                     }
     
@@ -484,10 +527,6 @@
                                 valA = a.location || '';
                                 valB = b.location || '';
                             }
-                        }
-    
-                        if (typeof valA === 'number' && typeof valB === 'number') {
-                            return this.sortAscending ? valA - valB : valB - valA;
                         }
     
                         valA = String(valA).toLowerCase();
@@ -524,6 +563,7 @@
     
                 toggleEdit() {
                     this.isEditing = !this.isEditing;
+                    this.newTagInput = '';
                 },
     
                 async saveChanges() {
@@ -546,6 +586,79 @@
                     }
                     this.isEditing = false;
                     alert("Changes successfully synchronized across active cluster nodes.");
+                },
+
+                // ------------------------------------------------
+                // CLOUD TRANSACTION TAG MUTATOR SUBROUTINES
+                // ------------------------------------------------
+                getArrayFromTags(tagsField) {
+                    if (!tagsField) return [];
+                    if (Array.isArray(tagsField)) return tagsField;
+                    return String(tagsField).split(',').map(t => t.trim()).filter(Boolean);
+                },
+
+                addTag(tagLabel) {
+                    let currentTags = this.getArrayFromTags(this.selectedItem.tags);
+                    if (!currentTags.includes(tagLabel)) {
+                        currentTags.push(tagLabel);
+                        this.selectedItem.tags = currentTags.join(', ');
+                    }
+                },
+
+                removeTag(tagLabel) {
+                    let currentTags = this.getArrayFromTags(this.selectedItem.tags);
+                    currentTags = currentTags.filter(t => t !== tagLabel);
+                    this.selectedItem.tags = currentTags.join(', ');
+                },
+
+                addCustomTagField() {
+                    const customTag = this.newTagInput.trim();
+                    if (customTag) {
+                        this.addTag(customTag);
+                        this.newTagInput = '';
+                    }
+                },
+
+                // ------------------------------------------------
+                // DYNAMIC MULTI-TAB TABLE DATA EXPORT ACTION
+                // ------------------------------------------------
+                exportCurrentTable() {
+                    // Pulls whatever data array is active, fully filtered and sorted
+                    const targetData = this.filteredData();
+                    if (targetData.length === 0) {
+                        alert("No records found in the current schema layer to export.");
+                        return;
+                    }
+
+                    // Extracts schema headers dynamically from first record item shape
+                    const properties = Object.keys(targetData[0]).filter(p => p !== 'latest_engagement');
+                    
+                    // Creates CSV data layout lines matrix
+                    const csvRows = [];
+                    csvRows.push(properties.map(p => `"${p.replace(/"/g, '""')}"`).join(','));
+
+                    for (const item of targetData) {
+                        const rowValues = properties.map(p => {
+                            let cellVal = item[p];
+                            if (cellVal && typeof cellVal === 'object') {
+                                cellVal = JSON.stringify(cellVal);
+                            }
+                            return `"${String(cellVal ?? '').replace(/"/g, '""')}"`;
+                        });
+                        csvRows.push(rowValues.join(','));
+                    }
+
+                    // Outputs download context link pipeline anchor injection
+                    const csvString = csvRows.join('\n');
+                    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                    const downloadUrl = URL.createObjectURL(blob);
+                    
+                    const temporaryAnchor = document.createElement('a');
+                    temporaryAnchor.href = downloadUrl;
+                    temporaryAnchor.setAttribute('download', `crm_export_${this.activeTab}_${new Date().toISOString().slice(0,10)}.csv`);
+                    document.body.appendChild(temporaryAnchor);
+                    temporaryAnchor.click();
+                    document.body.removeChild(temporaryAnchor);
                 },
     
                 getLogs(name) {
@@ -598,65 +711,6 @@
                     alert("Engagement interaction successfully tracked.");
                 },
     
-                // ------------------------------------------------
-                // DATA EXPORT FUNCTION (SheetJS integration)
-                // ------------------------------------------------
-                exportCurrentTable() {
-                    // 1. Fetch current runtime filtered datasets
-                    const targetData = this.filteredData();
-                    if (!targetData || targetData.length === 0) {
-                        alert("There is no active data grid criteria to map into a spreadsheet extract.");
-                        return;
-                    }
-
-                    // 2. Clear out heavy nesting fields before mapping properties to columns
-                    const printableDataset = targetData.map(item => {
-                        let row = { Name: item.name };
-                        
-                        if (this.activeTab === 'people') {
-                            row['Role / Industry'] = item.role || '';
-                            // Unpack standard metadata object fields seamlessly
-                            if (item.meta && typeof item.meta === 'object') {
-                                Object.keys(item.meta).forEach(key => {
-                                    const formattedLabel = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                                    row[formattedLabel] = item.meta[key];
-                                });
-                            }
-                        } else if (this.activeTab === 'venues') {
-                            row['Location'] = item.location || '';
-                            row['Capacity'] = item.capacity || '';
-                            row['Operating Hours'] = item.operating_hours || '';
-                            row['Description'] = item.description || '';
-                            row['Bookings & Terms'] = item.bookings_and_terms || '';
-                            row['Tags'] = item.tags || '';
-                            row['Remarks'] = item.remarks || '';
-                        } else if (this.activeTab === 'ecosystem') {
-                            row['Resource Type'] = item.type || '';
-                            row['Location'] = item.location || '';
-                            row['Phone'] = item.phone || '';
-                            row['Email'] = item.email || '';
-                            row['Operating Hours'] = item.operating_hours || '';
-                            row['Website'] = item.website || '';
-                            row['Description'] = item.description || '';
-                        }
-
-                        row['Total Engagements'] = item.total_engagements || 0;
-                        row['Latest Sentiment'] = item.latest_engagement ? item.latest_engagement.sentiment : 'None';
-                        return row;
-                    });
-
-                    // 3. Build workbook & trigger local file package generation downscaling
-                    const worksheet = XLSX.utils.json_to_sheet(printableDataset);
-                    const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, this.activeTab.toUpperCase());
-                    
-                    // Create descriptive safe naming string parameters
-                    const cleanDate = new Date().toISOString().split('T')[0];
-                    const filename = `CRM_Export_${this.activeTab}_${cleanDate}.xlsx`;
-                    
-                    XLSX.writeFile(workbook, filename);
-                },
-
                 handleFileIntercept(event) {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -691,6 +745,8 @@
                         const clean = h.trim().toLowerCase();
                         if (/name|organisation|organization|company/i.test(clean)) {
                             this.headerMappings[h] = 'name';
+                        } else if (/tag/i.test(clean)) {
+                            this.headerMappings[h] = 'tags';
                         } else if (this.activeTab === 'ecosystem') {
                             if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
                             else if (/phone|contact|tel/i.test(clean)) this.headerMappings[h] = 'phone';
@@ -706,7 +762,6 @@
                             else if (/hour|operating|time|open/i.test(clean)) this.headerMappings[h] = 'operating_hours';
                             else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
                             else if (/booking|terms|rule/i.test(clean)) this.headerMappings[h] = 'bookings_and_terms';
-                            else if (/tag/i.test(clean)) this.headerMappings[h] = 'tags';
                             else if (/remark|note/i.test(clean)) this.headerMappings[h] = 'remarks';
                             else this.headerMappings[h] = 'ignore';
                         } else {
@@ -730,8 +785,9 @@
     
                     this.rawInterceptedData.forEach(row => {
                         let parsedName = '';
+                        let parsedTags = '';
                         let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
-                        let venueData = { location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', tags: '', remarks: '' };
+                        let venueData = { location: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '' };
                         let legacySector = 'Imported Sector Base';
                         let legacyMeta = {};
     
@@ -743,12 +799,12 @@
     
                             if (destination === 'name') {
                                 parsedName = cellValue;
+                            } else if (destination === 'tags') {
+                                parsedTags = cellValue;
                             } else if (type === 'ecosystem') {
                                 if (destination in ecoData) ecoData[destination] = cellValue;
                             } else if (type === 'venues') {
-                                if (destination in venueData) {
-                                    venueData[destination] = cellValue;
-                                }
+                                if (destination in venueData) venueData[destination] = cellValue;
                             } else {
                                 if (destination === 'industry' || destination === 'role') legacySector = cellValue;
                                 else if (destination === 'meta_custom') {
@@ -759,7 +815,7 @@
                         });
     
                         if (parsedName) {
-                            let itemPayload = { name: parsedName, total_engagements: 0, latest_engagement: null };
+                            let itemPayload = { name: parsedName, tags: parsedTags, total_engagements: 0, latest_engagement: null };
                             if (type === 'ecosystem') {
                                 itemPayload = { ...itemPayload, ...ecoData };
                             } else if (type === 'venues') {
