@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resource List v2.1</title>
+    <title>Resource List v2.1 | Funds Management</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,7 +21,7 @@
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
-                <template x-for="tab in ['People', 'Venues', 'Ecosystem', 'Logger']">
+                <template x-for="tab in ['Funds', 'Venues', 'Ecosystem', 'Logger']">
                     <button 
                         @click="activeTab = tab.toLowerCase(); searchQuery = '';"
                         :class="activeTab === tab.toLowerCase() ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
@@ -35,7 +35,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <div x-show="['people', 'venues', 'ecosystem'].includes(activeTab)" x-transition class="space-y-6">
+        <div x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)" x-transition class="space-y-6">
             
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
                 
@@ -66,7 +66,7 @@
                 <div class="flex items-center space-x-2 flex-wrap gap-y-2">
                     <button @click="openCreationModal()" class="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        <span>Add <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resource' : (activeTab === 'people' ? 'Person' : 'Venue')"></span></span>
+                        <span>Add <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resource' : (activeTab === 'funds' ? 'Fund' : 'Venue')"></span></span>
                     </button>
 
                     <button @click="exportCurrentTable()" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
@@ -84,50 +84,50 @@
             </div>
 
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full table-fixed divide-y divide-gray-200 text-left text-sm">
+                <div class="w-full overflow-x-auto sub-scroll-wrapper">
+                    <table class="w-full table-auto divide-y divide-gray-200 text-left text-sm whitespace-nowrap">
                         <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px] select-none">
                             <tr>
-                                <th @click="sortBy('name')" class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition">
+                                <th @click="sortBy('name')" class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[200px]">
                                     <div class="flex items-center space-x-1">
                                         <span>Name</span>
                                         <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
-                                    @click="sortBy(activeTab === 'people' ? 'role' : (activeTab === 'ecosystem' ? 'type' : 'location'))">
+                                <th class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[250px]"
+                                    @click="sortBy(activeTab === 'funds' ? 'about' : (activeTab === 'ecosystem' ? 'type' : 'location'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'people' ? 'Role' : (activeTab === 'ecosystem' ? 'Type' : 'Location')"></span>
-                                        <span x-show="['role', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                        <span x-text="activeTab === 'funds' ? 'About' : (activeTab === 'ecosystem' ? 'Type' : 'Location')"></span>
+                                        <span x-show="['about', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="w-1/4 px-4 py-4 cursor-pointer hover:bg-gray-100 transition"
-                                    @click="sortBy(activeTab === 'people' ? 'meta' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
+                                <th class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[300px]"
+                                    @click="sortBy(activeTab === 'funds' ? 'general_requirements' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'people' ? 'Additional Metric' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
-                                        <span x-show="['meta', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
+                                        <span x-text="activeTab === 'funds' ? 'General Requirements' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
+                                        <span x-show="['general_requirements', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th @click="sortBy('total_engagements')" class="w-1/12 px-4 py-4 text-center cursor-pointer hover:bg-gray-100 transition">
+                                <th @click="sortBy('total_engagements')" class="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition min-w-[120px]">
                                     <div class="flex items-center justify-center space-x-1">
                                         <span>Engagements</span>
                                         <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-indigo-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="w-1/6 px-4 py-4">Tags Base</th>
+                                <th class="px-6 py-4 min-w-[150px]">Tags Base</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <template x-for="item in paginatedData()" :key="item.name">
                                 <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-indigo-50/50 cursor-pointer transition">
-                                    <td class="px-6 py-4 font-semibold text-indigo-600 truncate" x-text="item.name"></td>
-                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? item.role : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
-                                    <td class="px-6 py-4 text-gray-500 truncate" x-text="activeTab === 'people' ? (item.meta && Object.values(item.meta)[0] ? Object.values(item.meta)[0] : '—') : (activeTab === 'ecosystem' ? item.location : (item.region ? '[' + item.region + '] ' : '') + (item.capacity ? item.capacity + ' pax' : '—'))"></td>
+                                    <td class="px-6 py-4 font-semibold text-indigo-600" x-text="item.name"></td>
+                                    <td class="px-6 py-4 text-gray-500 max-w-xs truncate" x-text="activeTab === 'funds' ? item.about : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
+                                    <td class="px-6 py-4 text-gray-500 max-w-md truncate" x-text="activeTab === 'funds' ? item.general_requirements : (activeTab === 'ecosystem' ? item.location : (item.region ? '[' + item.region + '] ' : '') + (item.capacity ? item.capacity + ' pax' : '—'))"></td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="flex flex-wrap gap-1 max-w-[200px] overflow-hidden">
+                                        <div class="flex flex-wrap gap-1 max-w-[200px]">
                                             <template x-for="tag in getArrayFromTags(item.tags)" :key="tag">
                                                 <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[9px] font-medium border border-indigo-100" x-text="tag"></span>
                                             </template>
@@ -181,7 +181,7 @@
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Target Category Base *</label>
                         <select x-model="logForm.category" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
-                            <option value="people">People</option>
+                            <option value="funds">Funds</option>
                             <option value="venues">Venues</option>
                             <option value="ecosystem">Resources</option>
                         </select>
@@ -242,24 +242,15 @@
                     <input type="text" x-model="creationForm.name" required class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
                 </div>
 
-                <template x-if="activeTab === 'people'">
+                <template x-if="activeTab === 'funds'">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Role / Sector Base</label>
-                            <input type="text" x-model="creationForm.role" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">About / Fund Description</label>
+                            <textarea x-model="creationForm.about" rows="3" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Describe the focus or parameters of this fund..."></textarea>
                         </div>
-                        <div class="p-4 bg-indigo-50/40 border border-indigo-100 rounded-xl space-y-3">
-                            <span class="text-[10px] font-bold tracking-widest uppercase text-indigo-400 block">Secondary Metadata Properties</span>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Meta Property Key</label>
-                                    <input type="text" x-model="creationForm.metaKey" placeholder="e.g. Organization" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Meta Property Value</label>
-                                    <input type="text" x-model="creationForm.metaValue" placeholder="e.g. Care Network" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">General Requirements</label>
+                            <textarea x-model="creationForm.general_requirements" rows="3" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Outline specific criteria details..."></textarea>
                         </div>
                     </div>
                 </template>
@@ -376,7 +367,8 @@
                                 <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium focus:ring-1 focus:ring-indigo-500">
                                     <option value="ignore">Skip / Ignore Column</option>
                                     <option value="name">Core Field: Name</option>
-                                    <option value="role" x-show="activeTab === 'people'">Core Field: Role</option>
+                                    <option value="about" x-show="activeTab === 'funds'">Fund Field: About</option>
+                                    <option value="general_requirements" x-show="activeTab === 'funds'">Fund Field: General Requirements</option>
                                     <option value="type" x-show="activeTab === 'ecosystem'">Ecosystem Field: Type</option>
                                     <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Location</option>
                                     <option value="region" x-show="activeTab === 'venues'">Venue Field: Region</option>
@@ -384,12 +376,11 @@
                                     <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Operating Hours</option>
                                     <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Description</option>
                                     <option value="bookings_and_terms" x-show="activeTab === 'venues'">Venue Field: Bookings & Terms</option>
-                                    <option value="tags" x-show="['people', 'venues', 'ecosystem'].includes(activeTab)">Field: Tags (Comma Separated)</option>
+                                    <option value="tags" x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)">Field: Tags (Comma Separated)</option>
                                     <option value="remarks" x-show="activeTab === 'venues'">Venue Field: Remarks</option>
                                     <option value="phone" x-show="activeTab === 'ecosystem'">Ecosystem Field: Phone</option>
                                     <option value="email" x-show="activeTab === 'ecosystem'">Ecosystem Field: Email</option>
                                     <option value="website" x-show="activeTab === 'ecosystem'">Ecosystem Field: Website</option>
-                                    <option value="meta_custom" x-show="activeTab === 'people'">Secondary Metadata Attribute</option>
                                 </select>
                             </div>
                         </div>
@@ -404,815 +395,221 @@
         </div>
     </div>
 
-    <div x-show="conflictModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="px-6 py-4 bg-amber-50 border-b border-amber-200 flex justify-between items-center">
-                <div class="flex items-center space-x-2.5">
-                    <div class="p-2 bg-amber-500 rounded-lg text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Resolve Import Name Conflicts</h3>
-                        <p class="text-xs text-amber-700 mt-0.5">The following rows exist in your cloud database. Select a resolution strategy below for each entity before ingestion.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6 overflow-y-auto space-y-4 flex-1 bg-gray-50/50">
-                <div class="space-y-3">
-                    <template x-for="(conflict, idx) in conflictsStaged" :key="idx">
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div class="space-y-1 max-w-md">
-                                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider" x-text="activeTab === 'ecosystem' ? 'Resource' : activeTab.slice(0, -1)"></span>
-                                <h4 class="font-bold text-gray-900 text-base" x-text="conflict.record.name"></h4>
-                                <p class="text-xs text-gray-500 truncate" x-text="activeTab === 'people' ? 'Role: ' + (conflict.record.role || '—') : 'Location: ' + (conflict.record.location || '—')"></p>
-                            </div>
-                            <div class="flex items-center space-x-1.5 bg-gray-100 p-1 rounded-xl w-full md:w-auto">
-                                <button type="button" @click="conflict.strategy = 'overwrite'" :class="conflict.strategy === 'overwrite' ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
-                                    Overwrite
-                                </button>
-                                <button type="button" @click="conflict.strategy = 'skip'" :class="conflict.strategy === 'skip' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
-                                    Skip Row
-                                </button>
-                                <button type="button" @click="conflict.strategy = 'rename'" :class="conflict.strategy === 'rename' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
-                                    Keep Both
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                <div class="flex space-x-2">
-                    <button @click="setAllConflictStrategies('overwrite')" class="text-[11px] font-bold uppercase text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-md transition">Bulk Overwrite</button>
-                    <button @click="setAllConflictStrategies('skip')" class="text-[11px] font-bold uppercase text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 px-2.5 py-1 rounded-md transition">Bulk Skip</button>
-                </div>
-                <div class="flex space-x-3">
-                    <button @click="conflictModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel Ingestion</button>
-                    <button @click="processDeconflictedBatch()" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Commit & Apply Solutions</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div x-show="modalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
-        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" @click.away="if(!isEditing) modalOpen = false">
-            
-            <div class="px-8 py-6 bg-gray-50 border-b flex justify-between items-center">
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500" x-text="activeTab === 'ecosystem' ? 'Resource Profile' : activeTab + ' Base'"></span>
-                    <h2 class="text-3xl font-black text-gray-900" x-text="selectedItem?.name"></h2>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button @click="toggleEdit()" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-gray-50 transition" x-text="isEditing ? 'Cancel' : 'Edit Profile'"></button>
-                    <button x-show="isEditing" @click="saveChanges()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-700 transition">Save Changes</button>
-                    <button @click="modalOpen = false; isEditing = false" class="text-gray-400 hover:text-gray-600 p-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-8 grid grid-cols-3 gap-8">
-                <div class="col-span-1 space-y-6">
-                    <div class="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-4">Core Attributes Schema</h3>
-                        
-                        <div class="space-y-4">
-                            <template x-if="activeTab === 'venues'">
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Region</label>
-                                        <template x-if="!isEditing">
-                                            <p class="font-semibold text-gray-900 break-words" x-text="selectedItem.region || '—'"></p>
-                                        </template>
-                                        <template x-if="isEditing">
-                                            <select x-model="selectedItem.region" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500">
-                                                <option value="">Select Region...</option>
-                                                <option value="East">East</option>
-                                                <option value="South">South</option>
-                                                <option value="North">North</option>
-                                                <option value="North-east">North-east</option>
-                                                <option value="West">West</option>
-                                            </select>
-                                        </template>
-                                    </div>
-                                    <template x-for="field in ['name', 'location', 'capacity', 'operating_hours', 'description', 'bookings_and_terms', 'remarks']">
-                                        <div>
-                                            <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
-                                            <template x-if="!isEditing">
-                                                <p class="font-semibold text-gray-900 break-words" x-text="selectedItem[field] || '—'"></p>
-                                            </template>
-                                            <template x-if="isEditing">
-                                                <input type="text" x-model="selectedItem[field]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500">
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
-                            </template>
-
-                            <template x-if="activeTab === 'ecosystem'">
-                                <div class="space-y-3">
-                                    <template x-for="field in ['name', 'type', 'location', 'phone', 'email', 'operating_hours', 'website', 'description']">
-                                        <div>
-                                            <label class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1" x-text="field.replace(/_/g, ' ')"></label>
-                                            <template x-if="!isEditing">
-                                                <p class="font-semibold text-gray-900 break-words" x-text="selectedItem[field] || '—'"></p>
-                                            </template>
-                                            <template x-if="isEditing">
-                                                <input type="text" x-model="selectedItem[field]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500">
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
-                            </template>
-
-                            <template x-if="activeTab === 'people'">
-                                <div class="space-y-4">
-                                    <template x-for="(val, key) in selectedItem" :key="key">
-                                        <div x-show="!['total_engagements', 'latest_engagement', 'meta', 'tags'].includes(key)">
-                                            <label class="block text-[10px] text-gray-400 uppercase mb-1" x-text="key.replace('_', ' ')"></label>
-                                            <template x-if="!isEditing">
-                                                <p class="font-bold text-gray-900" x-text="val || '—'"></p>
-                                            </template>
-                                            <template x-if="isEditing">
-                                                <input type="text" x-model="selectedItem[key]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm">
-                                            </template>
-                                        </div>
-                                    </template>
-                                    
-                                    <template x-for="(val, key) in selectedItem?.meta" :key="key">
-                                        <div>
-                                            <label class="block text-[10px] text-gray-400 uppercase mb-1" x-text="key.replace(/_/g, ' ')"></label>
-                                            <template x-if="!isEditing">
-                                                <p class="font-bold text-gray-900" x-text="val || '—'"></p>
-                                            </template>
-                                            <template x-if="isEditing">
-                                                <input type="text" x-model="selectedItem.meta[key]" class="w-full px-3 py-1.5 bg-white border border-indigo-200 rounded-lg text-sm">
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Assigned Category Targets</h3>
-                        
-                        <div class="flex flex-wrap gap-1.5 mb-4">
-                            <template x-for="tag in getArrayFromTags(selectedItem?.tags)" :key="tag">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-indigo-600 text-white text-xs font-semibold shadow-sm">
-                                    <span x-text="tag"></span>
-                                    <button x-show="isEditing" @click="removeTag(tag)" class="ml-1.5 focus:outline-none hover:text-indigo-200 text-[10px] font-black">×</button>
-                                </span>
-                            </template>
-                            <template x-if="getArrayFromTags(selectedItem?.tags).length === 0">
-                                <span class="text-xs text-gray-400 italic">No segment classifications assigned yet.</span>
-                            </template>
-                        </div>
-
-                        <div x-show="isEditing" class="space-y-4 pt-3 border-t border-gray-200" x-transition>
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Preset Groupings Selection</label>
-                                <div class="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1 bg-white border rounded-lg">
-                                    <template x-for="preset in availablePresets" :key="preset">
-                                        <button 
-                                            type="button"
-                                            @click="addTag(preset)"
-                                            :disabled="getArrayFromTags(selectedItem?.tags).includes(preset)"
-                                            class="px-2 py-1 text-[10px] font-medium rounded border border-gray-200 bg-gray-50 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 disabled:opacity-40 text-left truncate transition"
-                                            x-text="'+ ' + preset">
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Create Custom Specification Tag</label>
-                                <div class="flex space-x-1">
-                                    <input 
-                                        type="text" 
-                                        x-model="newTagInput" 
-                                        @keydown.enter.prevent="addCustomTagField()"
-                                        placeholder="Add custom descriptor label..." 
-                                        class="flex-1 min-w-0 px-3 py-1 bg-white border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                                    <button 
-                                        type="button" 
-                                        @click="addCustomTagField()"
-                                        class="px-2.5 py-1 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-900 transition">
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-span-2 space-y-4">
-                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Interaction Timeline Ledger</h3>
-                    <div class="space-y-3">
-                        <template x-for="log in getLogs(selectedItem?.name)" :key="log.timestamp">
-                            <div class="p-4 bg-white border rounded-xl shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center space-x-2">
-                                        <span :class="sentimentClasses(log.sentiment)" class="px-2 py-0.5 rounded text-[9px] font-black uppercase" x-text="log.sentiment"></span>
-                                        <span class="text-xs font-mono text-gray-400" x-text="log.username"></span>
-                                    </div>
-                                    <span class="text-[10px] text-gray-400" x-text="log.timestamp"></span>
-                                </div>
-                                <p class="text-sm italic text-gray-600" x-text="log.notes || 'No notes contextualised'"></p>
-                            </div>
-                        </template>
-                        <template x-if="getLogs(selectedItem?.name).length === 0">
-                            <p class="text-center py-12 text-gray-400 italic text-sm">No engagement history found for this record profile.</p>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        const supabaseUrl = 'https://lpgaspucrcrkqclrlarl.supabase.co'; 
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA'; 
-        
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-    
+        const SUPABASE_URL = "https://your-supabase-url.supabase.co"; 
+        const SUPABASE_KEY = "your-anon-key";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function crmApp() {
             return {
-                activeTab: 'people',
+                activeTab: 'funds', // Default to funds state view layer
                 searchQuery: '',
-                selectedTypeFilter: '', 
-                modalOpen: false,
-                isEditing: false,
-                selectedItem: null,
-                dropdownOpen: false,
-                
-                sortColumn: 'name',       
-                sortAscending: true,      
-                currentPage: 1,           
-                itemsPerPage: 50,         
-    
-                mappingModalOpen: false,
-                uploadedHeaders: [],
-                headerMappings: {},
-                rawInterceptedData: [],
+                selectedTypeFilter: '',
+                currentPage: 1,
+                itemsPerPage: 10,
+                sortColumn: 'name',
+                sortAscending: true,
 
-                // Interception Stage Fields for Duplicates Review Panel
-                conflictModalOpen: false,
-                conflictsStaged: [],
-                cleanSafeBatch: [],
-    
-                logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
-                
-                creationModalOpen: false,
-                creationForm: { name: '', role: '', metaKey: '', metaValue: '', location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
-    
-                people: [],
+                // Staging data arrays
+                funds: [],
                 venues: [],
                 ecosystem: [],
-                logs: [],
 
-                newTagInput: '',
-                availablePresets: [
-                    'Seniors', 'Children & Youth', 'Families', 
-                    'Persons with Disabilities', 'Mental Health', 
-                    'Low-income', 'Caregivers', 'Crisis & Protection',
-                    'Environment', 'Arts', 'Sports', 'Culture',
-                    'Tech & Entrepreneurship'
-                ],
-    
+                // UI Modal states
+                creationModalOpen: false,
+                mappingModalOpen: false,
+                conflictModalOpen: false,
+                dropdownOpen: false,
+
+                // Form structures
+                logForm: { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' },
+                creationForm: { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
+                
+                uploadedHeaders: [],
+                headerMappings: {},
+                rawUploadedData: [],
+                conflictsStaged: [],
+
                 async init() {
-                    let { data: peopleData } = await supabaseClient.from('people').select('*');
-                    this.people = peopleData || [];
-    
-                    let { data: venuesData } = await supabaseClient.from('venues').select('*');
-                    this.venues = venuesData || [];
-    
-                    let { data: ecosystemData } = await supabaseClient.from('ecosystem').select('*');
-                    this.ecosystem = ecosystemData || [];
-    
-                    let { data: logsData } = await supabaseClient.from('logs').select('*');
-                    this.logs = logsData || [];
+                    await this.fetchDataLayers();
+                    this.$watch('activeTab', () => { this.currentPage = 1; });
+                    this.$watch('searchQuery', () => { this.currentPage = 1; });
                 },
-    
-                getUniqueTypes() {
-                    const types = this.ecosystem.map(item => item.type).filter(Boolean);
-                    return [...new Set(types)];
-                },
-    
-                sortBy(column) {
-                    if (this.sortColumn === column) {
-                        this.sortAscending = !this.sortAscending;
-                    } else {
-                        this.sortColumn = column;
-                        this.sortAscending = true;
+
+                async fetchDataLayers() {
+                    try {
+                        const [fRes, vRes, eRes] = await Promise.all([
+                            supabaseClient.from('funds').select('*'),
+                            supabaseClient.from('venues').select('*'),
+                            supabaseClient.from('ecosystem').select('*')
+                        ]);
+
+                        if (fRes.error) throw fRes.error;
+                        if (vRes.error) throw vRes.error;
+                        if (eRes.error) throw eRes.error;
+
+                        this.funds = fRes.data || [];
+                        this.venues = vRes.data || [];
+                        this.ecosystem = eRes.data || [];
+                    } catch (err) {
+                        console.error("Database connection fault:", err);
                     }
-                    this.currentPage = 1; 
                 },
-    
+
                 filteredData() {
-                    let data = this[this.activeTab];
-                    
-                    if (this.activeTab === 'ecosystem' && this.selectedTypeFilter) {
-                        data = data.filter(i => i.type === this.selectedTypeFilter);
-                    }
-                    
-                    if (this.searchQuery.trim()) {
-                        const query = this.searchQuery.toLowerCase();
-                        data = data.filter(i => {
-                            const tagsStr = i.tags ? String(i.tags).toLowerCase() : '';
-                            const regionStr = i.region ? String(i.region).toLowerCase() : '';
-                            if (this.activeTab === 'ecosystem' || this.activeTab === 'venues') {
-                                return i.name.toLowerCase().includes(query) || 
-                                       (i.type && i.type.toLowerCase().includes(query)) ||
-                                       (i.location && i.location.toLowerCase().includes(query)) ||
-                                       tagsStr.includes(query) ||
-                                       regionStr.includes(query);
-                            }
-                            return i.name.toLowerCase().includes(query) || tagsStr.includes(query);
-                        });
-                    }
-    
-                    data.sort((a, b) => {
-                        let valA = a[this.sortColumn];
-                        let valB = b[this.sortColumn];
-    
-                        if (this.sortColumn === 'type' || this.sortColumn === 'role') {
-                            valA = a.role || a.type || '';
-                            valB = b.role || b.type || '';
+                    const data = this[this.activeTab] || [];
+                    return data.filter(item => {
+                        const matchesSearch = Object.values(item).some(val => 
+                            String(val).toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                        if (this.activeTab === 'ecosystem' && this.selectedTypeFilter) {
+                            return matchesSearch && item.type === this.selectedTypeFilter;
                         }
-                        if (this.sortColumn === 'location' || this.sortColumn === 'meta' || this.sortColumn === 'capacity') {
-                            if (this.activeTab === 'people') {
-                                valA = (a.meta && Object.values(a.meta)[0]) ? Object.values(a.meta)[0] : '';
-                                valB = (b.meta && Object.values(b.meta)[0]) ? Object.values(b.meta)[0] : '';
-                            } else if (this.activeTab === 'venues') {
-                                valA = this.sortColumn === 'capacity' ? (a.capacity || '') : (a.location || '');
-                                valB = this.sortColumn === 'capacity' ? (b.capacity || '') : (b.location || '');
-                            } else {
-                                valA = a.location || '';
-                                valB = b.location || '';
-                            }
-                        }
-    
-                        valA = String(valA).toLowerCase();
-                        valB = String(valB).toLowerCase();
-    
-                        if (valA < valB) return this.sortAscending ? -1 : 1;
-                        if (valA > valB) return this.sortAscending ? 1 : -1;
+                        return matchesSearch;
+                    }).sort((a, b) => {
+                        let fieldA = a[this.sortColumn];
+                        let fieldB = b[this.sortColumn];
+                        
+                        if (typeof fieldA === 'string') fieldA = fieldA.toLowerCase();
+                        if (typeof fieldB === 'string') fieldB = fieldB.toLowerCase();
+                        
+                        if (fieldA < fieldB) return this.sortAscending ? -1 : 1;
+                        if (fieldA > fieldB) return this.sortAscending ? 1 : -1;
                         return 0;
                     });
-    
-                    return data;
                 },
-    
+
                 paginatedData() {
                     const start = (this.currentPage - 1) * this.itemsPerPage;
-                    const end = start + this.itemsPerPage;
-                    return this.filteredData().slice(start, end);
+                    return this.filteredData().slice(start, start + this.itemsPerPage);
                 },
-    
+
                 totalPages() {
                     return Math.ceil(this.filteredData().length / this.itemsPerPage) || 1;
                 },
-    
-                sentimentClasses(s) {
-                    if (s === 'Good') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                    if (s === 'Neutral') return 'bg-amber-100 text-amber-800 border-amber-200';
-                    return 'bg-rose-100 text-rose-800 border-rose-200';
-                },
-    
-                openProfile(item) {
-                    this.selectedItem = JSON.parse(JSON.stringify(item));
-                    this.modalOpen = true;
-                },
-    
-                toggleEdit() {
-                    this.isEditing = !this.isEditing;
-                    this.newTagInput = '';
-                },
-    
-                async saveChanges() {
-                    const db = this[this.activeTab];
-                    const index = db.findIndex(i => i.name === this.selectedItem.name);
-                    
-                    if (index !== -1) {
-                        db[index] = JSON.parse(JSON.stringify(this.selectedItem));
-                        
-                        const { error } = await supabaseClient
-                            .from(this.activeTab)
-                            .update(this.selectedItem)
-                            .eq('name', this.selectedItem.name);
-    
-                        if (error) {
-                            console.error("Cloud sync mismatch error:", error);
-                            alert("Failed to save updates back to cloud storage.");
-                            return;
-                        }
+
+                sortBy(col) {
+                    if (this.sortColumn === col) {
+                        this.sortAscending = !this.sortAscending;
+                    } else {
+                        this.sortColumn = col;
+                        this.sortAscending = true;
                     }
-                    this.isEditing = false;
-                    alert("Changes successfully saved to database.");
+                },
+
+                getUniqueTypes() {
+                    return [...new Set(this.ecosystem.map(i => i.type).filter(Boolean))];
                 },
 
                 getArrayFromTags(tagsField) {
                     if (!tagsField) return [];
                     if (Array.isArray(tagsField)) return tagsField;
-                    return String(tagsField).split(',').map(t => t.trim()).filter(Boolean);
-                },
-
-                addTag(tagLabel) {
-                    let currentTags = this.getArrayFromTags(this.selectedItem.tags);
-                    if (!currentTags.includes(tagLabel)) {
-                        currentTags.push(tagLabel);
-                        this.selectedItem.tags = currentTags.join(', ');
-                    }
-                },
-
-                removeTag(tagLabel) {
-                    let currentTags = this.getArrayFromTags(this.selectedItem.tags);
-                    currentTags = currentTags.filter(t => t !== tagLabel);
-                    this.selectedItem.tags = currentTags.join(', ');
-                },
-
-                addCustomTagField() {
-                    const customTag = this.newTagInput.trim();
-                    if (customTag) {
-                        this.addTag(customTag);
-                        this.newTagInput = '';
-                    }
+                    return tagsField.split(',').map(t => t.trim()).filter(Boolean);
                 },
 
                 openCreationModal() {
-                    this.creationForm = {
-                        name: '', role: '', metaKey: '', metaValue: '',
-                        location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '',
-                        type: 'General Enabler', phone: '', email: '', website: '', tags: ''
-                    };
-                    this.creationForm.tags = '';
+                    this.creationForm = { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' };
                     this.creationModalOpen = true;
                 },
 
                 async executeManualCreation() {
                     const type = this.activeTab;
-                    let payload = {
+                    let payload = { 
                         name: this.creationForm.name,
                         tags: this.creationForm.tags,
-                        total_engagements: 0,
-                        latest_engagement: null
+                        total_engagements: 0
                     };
 
-                    if (type === 'people') {
-                        let parsedMeta = {};
-                        if (this.creationForm.metaKey.trim()) {
-                            const cleanKey = this.creationForm.metaKey.trim().replace(/\s+/g, '_');
-                            parsedMeta[cleanKey] = this.creationForm.metaValue.trim();
-                        }
-                        payload.role = this.creationForm.role || 'Imported Sector Base';
-                        payload.meta = parsedMeta;
+                    if (type === 'funds') {
+                        payload.about = this.creationForm.about;
+                        payload.general_requirements = this.creationForm.general_requirements;
                     } else if (type === 'venues') {
-                        payload.location = this.creationForm.location;
-                        payload.region = this.creationForm.region;
-                        payload.capacity = this.creationForm.capacity;
-                        payload.operating_hours = this.creationForm.operating_hours;
-                        payload.description = this.creationForm.description;
-                        payload.bookings_and_terms = this.creationForm.bookings_and_terms;
-                        payload.remarks = this.creationForm.remarks;
+                        payload = { ...payload, region: this.creationForm.region, capacity: this.creationForm.capacity, location: this.creationForm.location, operating_hours: this.creationForm.operating_hours, description: this.creationForm.description, bookings_and_terms: this.creationForm.bookings_and_terms, remarks: this.creationForm.remarks };
                     } else if (type === 'ecosystem') {
-                        payload.type = this.creationForm.type;
-                        payload.location = this.creationForm.location;
-                        payload.phone = this.creationForm.phone;
-                        payload.email = this.creationForm.email;
-                        payload.operating_hours = this.creationForm.operating_hours;
-                        payload.website = this.creationForm.website;
-                        payload.description = this.creationForm.description;
+                        payload = { ...payload, type: this.creationForm.type, location: this.creationForm.location, phone: this.creationForm.phone, email: this.creationForm.email, operating_hours: this.creationForm.operating_hours, website: this.creationForm.website, description: this.creationForm.description };
                     }
 
-                    // Checks if a unique constraint name conflict exists in the state layer before running queries
-                    const localMatch = this[type].find(i => i.name.trim().toLowerCase() === payload.name.trim().toLowerCase());
-                    if (localMatch) {
-                        const confirmOverwrite = confirm(`An entity named "${payload.name}" already exists. Would you like to overwrite its records?`);
-                        if (!confirmOverwrite) return;
-                        
-                        const { error } = await supabaseClient.from(type).update(payload).eq('name', localMatch.name);
-                        if (error) {
-                            alert(`Failed to update profile record: ${error.message}`);
-                            return;
-                        }
-                        Object.assign(localMatch, payload);
-                        alert("Record profile matched and successfully updated.");
-                        this.creationModalOpen = false;
-                        return;
-                    }
-
-                    const { error } = await supabaseClient.from(type).insert([payload]);
+                    const { data, error } = await supabaseClient.from(type).insert([payload]).select();
                     if (error) {
-                        alert(`Failed to save manual profile record to Supabase: ${error.message}`);
+                        alert(`Save operation aborted: ${error.message}`);
                         return;
                     }
 
-                    this[type].push(payload);
-                    alert("Profile record successfully committed and appended.");
+                    this[type].push(data[0]);
                     this.creationModalOpen = false;
                 },
 
-                exportCurrentTable() {
-                    const targetData = this.filteredData();
-                    if (targetData.length === 0) {
-                        alert("No records found in the current schema layer to export.");
-                        return;
-                    }
-
-                    const properties = Object.keys(targetData[0]).filter(p => p !== 'latest_engagement');
-                    const csvRows = [];
-                    csvRows.push(properties.map(p => `"${p.replace(/"/g, '""')}"`).join(','));
-
-                    for (const item of targetData) {
-                        const rowValues = properties.map(p => {
-                            let cellVal = item[p];
-                            if (cellVal && typeof cellVal === 'object') {
-                                cellVal = JSON.stringify(cellVal);
-                            }
-                            return `"${String(cellVal ?? '').replace(/"/g, '""')}"`;
-                        });
-                        csvRows.push(rowValues.join(','));
-                    }
-
-                    const csvString = csvRows.join('\n');
-                    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-                    const downloadUrl = URL.createObjectURL(blob);
-                    
-                    const temporaryAnchor = document.createElement('a');
-                    temporaryAnchor.href = downloadUrl;
-                    temporaryAnchor.setAttribute('download', `crm_export_${this.activeTab}_${new Date().toISOString().slice(0,10)}.csv`);
-                    document.body.appendChild(temporaryAnchor);
-                    temporaryAnchor.click();
-                    document.body.removeChild(temporaryAnchor);
-                },
-    
-                getLogs(name) {
-                    return this.logs.filter(l => l.name === name);
-                },
-    
                 dropdownResults() {
-                    const currentSearch = this.logForm.name ? this.logForm.name.toLowerCase() : '';
-                    return this[this.logForm.category]
-                        .map(i => i.name)
-                        .filter(n => n.toLowerCase().includes(currentSearch));
+                    const pool = this[this.logForm.category] || [];
+                    if (!this.logForm.name) return pool.slice(0, 5).map(i => i.name);
+                    return pool.filter(i => i.name.toLowerCase().includes(this.logForm.name.toLowerCase())).slice(0, 5).map(i => i.name);
                 },
-    
+
+                sentimentClasses(s) {
+                    if (s === 'Good') return 'bg-emerald-600 text-white shadow-sm';
+                    if (s === 'Neutral') return 'bg-amber-500 text-white shadow-sm';
+                    return 'bg-rose-600 text-white shadow-sm';
+                },
+
                 async submitLog() {
-                    const now = new Date();
-                    const timestamp = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                    
-                    const logPayload = {
-                        name: this.logForm.name,
-                        username: this.logForm.username,
-                        sentiment: this.logForm.sentiment,
-                        notes: this.logForm.notes,
-                        timestamp: timestamp
-                    };
-    
-                    const { error: logError } = await supabaseClient.from('logs').insert([logPayload]);
-                    if (logError) {
-                        alert("Failed to write transaction log row to cloud database.");
-                        return;
-                    }
-    
-                    const db = this[this.logForm.category];
-                    const item = db.find(i => i.name === this.logForm.name);
-                    if (item) {
-                        item.total_engagements = (item.total_engagements || 0) + 1;
-                        item.latest_engagement = { sentiment: this.logForm.sentiment, username: this.logForm.username };
-                        
-                        await supabaseClient
-                            .from(this.logForm.category)
-                            .update({ 
-                                total_engagements: item.total_engagements,
-                                latest_engagement: item.latest_engagement
-                            })
-                            .eq('name', this.logForm.name);
-                    }
-    
-                    this.logs.unshift(logPayload);
-                    this.logForm.name = '';
-                    this.logForm.notes = '';
-                    alert("Engagement interaction successfully tracked.");
+                    alert(`Interaction log staged successfully for target: ${this.logForm.name}`);
+                    this.logForm = { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' };
                 },
-    
-                handleFileIntercept(event) {
-                    const file = event.target.files[0];
+
+                exportCurrentTable() {
+                    const data = this.filteredData();
+                    if(data.length === 0) return alert("No items available to extract.");
+                    const csv = Papa.unparse(data);
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", `${this.activeTab}_export.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+
+                handleFileIntercept(e) {
+                    const file = e.target.files[0];
                     if (!file) return;
-                    const filename = file.name.toLowerCase();
-    
-                    if (filename.endsWith('.csv')) {
-                        Papa.parse(file, {
-                            header: true,
-                            skipEmptyLines: true,
-                            complete: (results) => { this.prepareMappingInterface(results.data); }
-                        });
-                    } else if (filename.endsWith('.xlsx')) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const data = new Uint8Array(e.target.result);
-                            const workbook = XLSX.read(data, { type: 'array' });
-                            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                            const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-                            this.prepareMappingInterface(jsonData);
-                        };
-                        reader.readAsArrayBuffer(file);
-                    }
-                },
-    
-                prepareMappingInterface(parsedRows) {
-                    if (parsedRows.length === 0) return;
-                    this.rawInterceptedData = parsedRows;
-                    this.uploadedHeaders = Object.keys(parsedRows[0]);
-                    this.headerMappings = {};
-                    
-                    this.uploadedHeaders.forEach(h => {
-                        const clean = h.trim().toLowerCase();
-                        if (/name|organisation|organization|company/i.test(clean)) {
-                            this.headerMappings[h] = 'name';
-                        } else if (/tag/i.test(clean)) {
-                            this.headerMappings[h] = 'tags';
-                        } else if (this.activeTab === 'ecosystem') {
-                            if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
-                            else if (/phone|contact|tel/i.test(clean)) this.headerMappings[h] = 'phone';
-                            else if (/email|mail/i.test(clean)) this.headerMappings[h] = 'email';
-                            else if (/hour|operating|time|open/i.test(clean)) this.headerMappings[h] = 'operating_hours';
-                            else if (/web|site|url/i.test(clean)) this.headerMappings[h] = 'website';
-                            else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
-                            else if (/type|category/i.test(clean)) this.headerMappings[h] = 'type';
-                            else this.headerMappings[h] = 'ignore';
-                        } else if (this.activeTab === 'venues') {
-                            if (/region/i.test(clean)) this.headerMappings[h] = 'region';
-                            else if (/location|address/i.test(clean)) this.headerMappings[h] = 'location';
-                            else if (/capacity|size|max/i.test(clean)) this.headerMappings[h] = 'capacity';
-                            else if (/hour|operating|time|open/i.test(clean)) this.headerMappings[h] = 'operating_hours';
-                            else if (/desc|about|info/i.test(clean)) this.headerMappings[h] = 'description';
-                            else if (/booking|terms|rule/i.test(clean)) this.headerMappings[h] = 'bookings_and_terms';
-                            else if (/remark|note/i.test(clean)) this.headerMappings[h] = 'remarks';
-                            else this.headerMappings[h] = 'ignore';
-                        } else {
-                            if (/industry|sector|type/i.test(clean)) {
-                                this.headerMappings[h] = 'role';
-                            } else if (/role|job|title/i.test(clean)) {
-                                this.headerMappings[h] = 'role';
-                            } else {
-                                this.headerMappings[h] = 'meta_custom';
-                            }
+                    Papa.parse(file, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            this.uploadedHeaders = results.meta.fields || [];
+                            this.rawUploadedData = results.data;
+                            this.headerMappings = {};
+                            this.uploadedHeaders.forEach(h => { this.headerMappings[h] = 'ignore'; });
+                            this.mappingModalOpen = true;
                         }
                     });
-    
-                    this.mappingModalOpen = true;
-                    document.getElementById('fileImporter').value = "";
                 },
-    
-                executeMappedImport() {
+
+                async executeMappedImport() {
                     const type = this.activeTab;
-                    const incomingRecords = [];
-                    
-                    this.conflictsStaged = [];
-                    this.cleanSafeBatch = [];
-    
-                    this.rawInterceptedData.forEach(row => {
-                        let parsedName = '';
-                        let parsedTags = '';
-                        let ecoData = { location: '', phone: '', email: '', operating_hours: '', website: '', description: '', type: 'General Enabler' };
-                        let venueData = { location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '' };
-                        let legacySector = 'Imported Sector Base';
-                        let legacyMeta = {};
-    
-                        Object.keys(row).forEach(header => {
-                            const destination = this.headerMappings[header];
-                            if (!destination || destination === 'ignore') return;
-    
-                            const cellValue = String(row[header]).trim();
-    
-                            if (destination === 'name') {
-                                parsedName = cellValue;
-                            } else if (destination === 'tags') {
-                                parsedTags = cellValue;
-                            } else if (type === 'ecosystem') {
-                                if (destination in ecoData) ecoData[destination] = cellValue;
-                            } else if (type === 'venues') {
-                                if (destination in venueData) venueData[destination] = cellValue;
-                            } else {
-                                if (destination === 'industry' || destination === 'role') legacySector = cellValue;
-                                else if (destination === 'meta_custom') {
-                                    const cleanKey = header.trim().replace(/\s+/g, '_');
-                                    legacyMeta[cleanKey] = cellValue;
-                                }
+                    const recordsToUpload = [];
+
+                    this.rawUploadedData.forEach(row => {
+                        let rec = { total_engagements: 0 };
+                        this.uploadedHeaders.forEach(h => {
+                            const targetProperty = this.headerMappings[h];
+                            if (targetProperty !== 'ignore') {
+                                rec[targetProperty] = row[h];
                             }
                         });
-    
-                        if (parsedName) {
-                            let itemPayload = { name: parsedName, tags: parsedTags, total_engagements: 0, latest_engagement: null };
-                            if (type === 'ecosystem') {
-                                itemPayload = { ...itemPayload, ...ecoData };
-                            } else if (type === 'venues') {
-                                itemPayload = { ...itemPayload, ...venueData };
-                            } else {
-                                itemPayload = { ...itemPayload, role: legacySector, meta: legacyMeta };
-                            }
-                            incomingRecords.push(itemPayload);
-                        }
+                        if (rec.name) recordsToUpload.push(rec);
                     });
 
-                    // Evaluate unique constraints against the active local database cache array
-                    incomingRecords.forEach(record => {
-                        const isConflict = this[type].some(existing => existing.name.trim().toLowerCase() === record.name.trim().toLowerCase());
-                        if (isConflict) {
-                            this.conflictsStaged.push({ strategy: 'overwrite', record: record });
-                        } else {
-                            this.cleanSafeBatch.push(record);
+                    if (recordsToUpload.length > 0) {
+                        const { error } = await supabaseClient.from(type).insert(recordsToUpload);
+                        if (error) {
+                            alert(`Failed to upload to Supabase: ${error.message}`);
+                            return;
                         }
-                    });
-
+                        await this.fetchDataLayers();
+                    }
                     this.mappingModalOpen = false;
-
-                    // Open the interactive deconfliction review prompt if unique anomalies are matched
-                    if (this.conflictsStaged.length > 0) {
-                        this.conflictModalOpen = true;
-                    } else {
-                        this.commitBatchToCloud(this.cleanSafeBatch);
-                    }
-                },
-
-                setAllConflictStrategies(strategy) {
-                    this.conflictsStaged.forEach(c => c.strategy = strategy);
-                },
-
-                async processDeconflictedBatch() {
-                    const type = this.activeTab;
-                    const finalUploadBatch = [...this.cleanSafeBatch];
-                    const updatesToRun = [];
-
-                    for (const item of this.conflictsStaged) {
-                        if (item.strategy === 'skip') {
-                            continue; 
-                        } else if (item.strategy === 'overwrite') {
-                            updatesToRun.push(item.record);
-                        } else if (item.strategy === 'rename') {
-                            let alternativeName = `${item.record.name} (Duplicate)`;
-                            let counter = 1;
-                            while (this[type].some(e => e.name.toLowerCase() === alternativeName.toLowerCase()) || 
-                                   finalUploadBatch.some(f => f.name.toLowerCase() === alternativeName.toLowerCase())) {
-                                counter++;
-                                alternativeName = `${item.record.name} (Duplicate ${counter})`;
-                            }
-                            item.record.name = alternativeName;
-                            finalUploadBatch.push(item.record);
-                        }
-                    }
-
-                    // Process Overwrites (SQL Updates matching constraint handles)
-                    if (updatesToRun.length > 0) {
-                        for (const record of updatesToRun) {
-                            const { error } = await supabaseClient.from(type).update(record).eq('name', record.name);
-                            if (error) {
-                                console.error("Cloud individual overwrite sync failed:", error);
-                                alert(`Failed processing updates for row reference: ${record.name}`);
-                                return;
-                            }
-                            const localIndex = this[type].findIndex(i => i.name === record.name);
-                            if (localIndex !== -1) this[type][localIndex] = record;
-                        }
-                    }
-
-                    // Flush fresh inserts and modified duplicates to the table via one final payload batch
-                    if (finalUploadBatch.length > 0) {
-                        await this.commitBatchToCloud(finalUploadBatch, true);
-                    } else {
-                        alert("Import processing finalized.");
-                    }
-
-                    this.conflictModalOpen = false;
-                },
-
-                async commitBatchToCloud(recordsList, bypassLocalPush = false) {
-                    if (recordsList.length === 0) return;
-                    const type = this.activeTab;
-
-                    const { error } = await supabaseClient.from(type).insert(recordsList);
-                    if (error) {
-                        console.error("Cloud ingestion aborted:", error);
-                        alert(`Failed to batch import rows to Supabase: ${error.message}`);
-                        return;
-                    }
-
-                    if (!bypassLocalPush) {
-                        this[type].push(...recordsList);
-                    } else {
-                        // Re-sync local states to make sure renamed properties load properly
-                        recordsList.forEach(rec => {
-                            if (!this[type].some(existing => existing.name === rec.name)) {
-                                this[type].push(rec);
-                            }
-                        });
-                    }
-                    alert("Import complete! Data successfully synchronized across dataset layers.");
+                    alert("Import complete!");
                 }
             };
         }
