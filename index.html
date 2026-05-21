@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data=\"crmApp()\">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
 
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
@@ -404,6 +404,58 @@
         </div>
     </div>
 
+    <div x-show="conflictModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="px-6 py-4 bg-amber-50 border-b border-amber-200 flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 bg-amber-500 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Resolve Import Name Conflicts</h3>
+                        <p class="text-xs text-amber-700 mt-0.5">The following rows exist in your cloud database. Select a resolution strategy below for each entity before ingestion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 bg-gray-50/50">
+                <div class="space-y-3">
+                    <template x-for="(conflict, idx) in conflictsStaged" :key="idx">
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div class="space-y-1 max-w-md">
+                                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider" x-text="activeTab === 'ecosystem' ? 'Resource' : activeTab.slice(0, -1)"></span>
+                                <h4 class="font-bold text-gray-900 text-base" x-text="conflict.record.name"></h4>
+                                <p class="text-xs text-gray-500 truncate" x-text="activeTab === 'people' ? 'Role: ' + (conflict.record.role || '—') : 'Location: ' + (conflict.record.location || '—')"></p>
+                            </div>
+                            <div class="flex items-center space-x-1.5 bg-gray-100 p-1 rounded-xl w-full md:w-auto">
+                                <button type="button" @click="conflict.strategy = 'overwrite'" :class="conflict.strategy === 'overwrite' ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
+                                    Overwrite
+                                </button>
+                                <button type="button" @click="conflict.strategy = 'skip'" :class="conflict.strategy === 'skip' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
+                                    Skip Row
+                                </button>
+                                <button type="button" @click="conflict.strategy = 'rename'" :class="conflict.strategy === 'rename' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'" class="flex-1 md:flex-none px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition">
+                                    Keep Both
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+                <div class="flex space-x-2">
+                    <button @click="setAllConflictStrategies('overwrite')" class="text-[11px] font-bold uppercase text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-md transition">Bulk Overwrite</button>
+                    <button @click="setAllConflictStrategies('skip')" class="text-[11px] font-bold uppercase text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 px-2.5 py-1 rounded-md transition">Bulk Skip</button>
+                </div>
+                <div class="flex space-x-3">
+                    <button @click="conflictModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel Ingestion</button>
+                    <button @click="processDeconflictedBatch()" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Commit & Apply Solutions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div x-show="modalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" @click.away="if(!isEditing) modalOpen = false">
             
@@ -606,6 +658,11 @@
                 uploadedHeaders: [],
                 headerMappings: {},
                 rawInterceptedData: [],
+
+                // Interception Stage Fields for Duplicates Review Panel
+                conflictModalOpen: false,
+                conflictsStaged: [],
+                cleanSafeBatch: [],
     
                 logForm: { category: 'people', name: '', username: '', sentiment: 'Good', notes: '' },
                 
@@ -792,6 +849,7 @@
                         location: '', region: '', capacity: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '',
                         type: 'General Enabler', phone: '', email: '', website: '', tags: ''
                     };
+                    this.creationForm.tags = '';
                     this.creationModalOpen = true;
                 },
 
@@ -830,28 +888,31 @@
                         payload.description = this.creationForm.description;
                     }
 
-                    // Handled Deconfliction: Replaced .insert() with .upsert() matching on unique index 'name'
-                    const { data, error } = await supabaseClient
-                        .from(type)
-                        .upsert([payload], { onConflict: 'name' })
-                        .select();
-
-                    if (error) {
-                        console.error("Cloud insert/upsert aborted:", error);
-                        alert(`Failed to save record to Supabase: ${error.message}`);
+                    // Checks if a unique constraint name conflict exists in the state layer before running queries
+                    const localMatch = this[type].find(i => i.name.trim().toLowerCase() === payload.name.trim().toLowerCase());
+                    if (localMatch) {
+                        const confirmOverwrite = confirm(`An entity named "${payload.name}" already exists. Would you like to overwrite its records?`);
+                        if (!confirmOverwrite) return;
+                        
+                        const { error } = await supabaseClient.from(type).update(payload).eq('name', localMatch.name);
+                        if (error) {
+                            alert(`Failed to update profile record: ${error.message}`);
+                            return;
+                        }
+                        Object.assign(localMatch, payload);
+                        alert("Record profile matched and successfully updated.");
+                        this.creationModalOpen = false;
                         return;
                     }
 
-                    // Seamless local state synchronicity handling matching UI layers
-                    const existingIndex = this[type].findIndex(i => i.name === payload.name);
-                    if (existingIndex !== -1) {
-                        this[type][existingIndex] = payload;
-                        alert("Existing profile match detected. Record successfully updated across dataset layers.");
-                    } else {
-                        this[type].push(payload);
-                        alert("Profile record successfully committed and appended across dataset layers.");
+                    const { error } = await supabaseClient.from(type).insert([payload]);
+                    if (error) {
+                        alert(`Failed to save manual profile record to Supabase: ${error.message}`);
+                        return;
                     }
 
+                    this[type].push(payload);
+                    alert("Profile record successfully committed and appended.");
                     this.creationModalOpen = false;
                 },
 
@@ -1008,9 +1069,12 @@
                     document.getElementById('fileImporter').value = "";
                 },
     
-                async executeMappedImport() {
+                executeMappedImport() {
                     const type = this.activeTab;
-                    const recordsToUpload = [];
+                    const incomingRecords = [];
+                    
+                    this.conflictsStaged = [];
+                    this.cleanSafeBatch = [];
     
                     this.rawInterceptedData.forEach(row => {
                         let parsedName = '';
@@ -1052,35 +1116,103 @@
                             } else {
                                 itemPayload = { ...itemPayload, role: legacySector, meta: legacyMeta };
                             }
-                            recordsToUpload.push(itemPayload);
+                            incomingRecords.push(itemPayload);
                         }
                     });
-    
-                    // Handled Bulk Ingestion Deconfliction: Swapped out raw .insert for a batch conflict resolution statement
-                    if (recordsToUpload.length > 0) {
-                        const { error } = await supabaseClient
-                            .from(type)
-                            .upsert(recordsToUpload, { onConflict: 'name' });
 
-                        if (error) {
-                            console.error("Cloud ingestion aborted:", error);
-                            alert("Failed to batch import rows to Supabase.");
-                            return;
+                    // Evaluate unique constraints against the active local database cache array
+                    incomingRecords.forEach(record => {
+                        const isConflict = this[type].some(existing => existing.name.trim().toLowerCase() === record.name.trim().toLowerCase());
+                        if (isConflict) {
+                            this.conflictsStaged.push({ strategy: 'overwrite', record: record });
+                        } else {
+                            this.cleanSafeBatch.push(record);
                         }
+                    });
 
-                        // Seamless local UI tracking array update handling 
-                        recordsToUpload.forEach(newRecord => {
-                            const localIndex = this[type].findIndex(i => i.name === newRecord.name);
-                            if (localIndex !== -1) {
-                                this[type][localIndex] = newRecord;
-                            } else {
-                                this[type].push(newRecord);
+                    this.mappingModalOpen = false;
+
+                    // Open the interactive deconfliction review prompt if unique anomalies are matched
+                    if (this.conflictsStaged.length > 0) {
+                        this.conflictModalOpen = true;
+                    } else {
+                        this.commitBatchToCloud(this.cleanSafeBatch);
+                    }
+                },
+
+                setAllConflictStrategies(strategy) {
+                    this.conflictsStaged.forEach(c => c.strategy = strategy);
+                },
+
+                async processDeconflictedBatch() {
+                    const type = this.activeTab;
+                    const finalUploadBatch = [...this.cleanSafeBatch];
+                    const updatesToRun = [];
+
+                    for (const item of this.conflictsStaged) {
+                        if (item.strategy === 'skip') {
+                            continue; 
+                        } else if (item.strategy === 'overwrite') {
+                            updatesToRun.push(item.record);
+                        } else if (item.strategy === 'rename') {
+                            let alternativeName = `${item.record.name} (Duplicate)`;
+                            let counter = 1;
+                            while (this[type].some(e => e.name.toLowerCase() === alternativeName.toLowerCase()) || 
+                                   finalUploadBatch.some(f => f.name.toLowerCase() === alternativeName.toLowerCase())) {
+                                counter++;
+                                alternativeName = `${item.record.name} (Duplicate ${counter})`;
+                            }
+                            item.record.name = alternativeName;
+                            finalUploadBatch.push(item.record);
+                        }
+                    }
+
+                    // Process Overwrites (SQL Updates matching constraint handles)
+                    if (updatesToRun.length > 0) {
+                        for (const record of updatesToRun) {
+                            const { error } = await supabaseClient.from(type).update(record).eq('name', record.name);
+                            if (error) {
+                                console.error("Cloud individual overwrite sync failed:", error);
+                                alert(`Failed processing updates for row reference: ${record.name}`);
+                                return;
+                            }
+                            const localIndex = this[type].findIndex(i => i.name === record.name);
+                            if (localIndex !== -1) this[type][localIndex] = record;
+                        }
+                    }
+
+                    // Flush fresh inserts and modified duplicates to the table via one final payload batch
+                    if (finalUploadBatch.length > 0) {
+                        await this.commitBatchToCloud(finalUploadBatch, true);
+                    } else {
+                        alert("Import processing finalized.");
+                    }
+
+                    this.conflictModalOpen = false;
+                },
+
+                async commitBatchToCloud(recordsList, bypassLocalPush = false) {
+                    if (recordsList.length === 0) return;
+                    const type = this.activeTab;
+
+                    const { error } = await supabaseClient.from(type).insert(recordsList);
+                    if (error) {
+                        console.error("Cloud ingestion aborted:", error);
+                        alert(`Failed to batch import rows to Supabase: ${error.message}`);
+                        return;
+                    }
+
+                    if (!bypassLocalPush) {
+                        this[type].push(...recordsList);
+                    } else {
+                        // Re-sync local states to make sure renamed properties load properly
+                        recordsList.forEach(rec => {
+                            if (!this[type].some(existing => existing.name === rec.name)) {
+                                this[type].push(rec);
                             }
                         });
                     }
-    
-                    this.mappingModalOpen = false;
-                    alert(`Import complete!`);
+                    alert("Import complete! Data successfully synchronized across dataset layers.");
                 }
             };
         }
