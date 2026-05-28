@@ -16,8 +16,8 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">CRM</div>
-                <span class="font-bold text-lg tracking-tight">VibeCRM v8</span>
+                <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">RL</div>
+                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
             </div>
             
             <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
@@ -47,7 +47,7 @@
                         <input 
                             type="text" 
                             x-model="searchQuery"
-                            :placeholder="activeTab === 'ecosystem' ? 'Search resources by name, type, or location...' : 'Search ' + activeTab + '...'" 
+                            :placeholder="activeTab === 'ecosystem' ? 'Search resources...' : 'Search ' + activeTab + '...'" 
                             class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
                     </div>
             
@@ -104,7 +104,7 @@
                                 <th class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[250px]"
                                     @click="sortBy(activeTab === 'funds' ? 'general_requirements' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
-                                        <span x-text="activeTab === 'funds' ? 'General Requirements' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
+                                        <span x-text="activeTab === 'funds' ? 'Requirements' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
                                         <span x-show="['general_requirements', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-orange-600 text-[8px]"></span>
                                     </div>
                                 </th>
@@ -175,11 +175,11 @@
 
         <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto" style="display: none;">
             <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
-                <h2 class="text-2xl font-bold text-gray-900">Log Engagement Interaction</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Log Engagement</h2>
                 
                 <form @submit.prevent="submitLog()" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Target Category Base *</label>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Category *</label>
                         <select x-model="logForm.category" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                             <option value="funds">Funds</option>
                             <option value="venues">Venues</option>
@@ -188,8 +188,8 @@
                     </div>
 
                     <div class="relative">
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Profile Entity Name *</label>
-                        <input type="text" x-model="logForm.name" @focus="dropdownOpen = true" @click.away="dropdownOpen = false" placeholder="Search parameters..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Name *</label>
+                        <input type="text" x-model="logForm.name" @focus="dropdownOpen = true" @click.away="dropdownOpen = false" placeholder="Search..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                         
                         <div x-show="dropdownOpen && dropdownResults().length > 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto">
                             <template x-for="res in dropdownResults()">
@@ -200,11 +200,11 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Officer Username Handle *</label>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Officer *</label>
                             <input type="text" x-model="logForm.username" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Relationship Sentiment *</label>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Sentiment *</label>
                             <div class="flex space-x-2">
                                 <template x-for="s in ['Good', 'Neutral', 'Bad']">
                                     <button type="button" @click="logForm.sentiment = s" :class="logForm.sentiment === s ? sentimentClasses(s) : 'bg-gray-100 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition" x-text="s"></button>
@@ -214,11 +214,11 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Detailed Interaction Narrative</label>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Notes</label>
                         <textarea x-model="logForm.notes" rows="4" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 shadow-lg transition">Submit Log Entry</button>
+                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 shadow-lg transition">Submit Log</button>
                 </form>
             </div>
         </div>
@@ -228,8 +228,8 @@
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Create/Update Record Profile</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Input profile data fields to synchronize directly to <span class="uppercase font-semibold text-orange-600" x-text="activeTab"></span> storage layer.</p>
+                    <h3 class="text-lg font-bold text-gray-900">Create / Update Profile</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Fill in the fields to save directly to database storage.</p>
                 </div>
                 <button @click="creationModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -238,7 +238,7 @@
 
             <form @submit.prevent="executeManualCreation()" class="flex-1 overflow-y-auto p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Entity Name *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Name *</label>
                     <input type="text" x-model="creationForm.name" required class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                 </div>
 
@@ -249,7 +249,7 @@
                             <textarea x-model="creationForm.about" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">General Requirements</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Requirements</label>
                             <textarea x-model="creationForm.general_requirements" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
                         </div>
                     </div>
@@ -258,7 +258,7 @@
                 <template x-if="activeTab === 'venues'">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Region Category *</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Region *</label>
                             <select x-model="creationForm.region" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                                 <option value="">Select Region...</option>
                                 <option value="East">East</option>
@@ -269,27 +269,27 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Capacity Maximum</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Capacity</label>
                             <input type="text" x-model="creationForm.capacity" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Details</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
                             <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours Span</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Hours</label>
                             <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description Overview</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description</label>
                             <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Bookings & Terms Matrix</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Terms & Bookings</label>
                             <input type="text" x-model="creationForm.bookings_and_terms" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Internal Remarks</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Remarks</label>
                             <input type="text" x-model="creationForm.remarks" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                     </div>
@@ -298,7 +298,7 @@
                 <template x-if="activeTab === 'ecosystem'">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Resource Type Definition</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Type</label>
                             <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm" placeholder="e.g. Active Ageing Centres">
                         </div>
                         <div>
@@ -306,30 +306,30 @@
                             <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Phone Contact</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Phone</label>
                             <input type="text" x-model="creationForm.phone" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Email Connection</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Email</label>
                             <input type="email" x-model="creationForm.email" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Hours</label>
                             <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Website URL Domain</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Website</label>
                             <input type="text" x-model="creationForm.website" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Resource Scope Description</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description</label>
                             <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
                         </div>
                     </div>
                 </template>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Classification Target Tags (Comma Separated)</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Tags (Comma Separated)</label>
                     <input type="text" x-model="creationForm.tags" placeholder="e.g. Seniors, Environment" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
                 </div>
 
@@ -346,7 +346,7 @@
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 class="text-xl font-bold text-gray-900" x-text="selectedItem.name"></h3>
-                    <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider font-semibold">Entity Type: <span class="text-orange-600" x-text="activeTab"></span></p>
+                    <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider font-semibold">Category: <span class="text-orange-600" x-text="activeTab"></span></p>
                 </div>
                 <button @click="profileModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -355,16 +355,16 @@
 
             <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b pb-2">Technical Properties Spectrum</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b pb-2">Details</h4>
                     
                     <template x-if="activeTab === 'funds'">
                         <div class="grid grid-cols-1 gap-4 bg-gray-50 p-4 rounded-xl border">
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">About / Scope Parameter</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">About</span>
                                 <div class="text-sm font-medium text-gray-800 whitespace-pre-wrap mt-1" x-text="selectedItem.about || '—'"></div>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">General Requirements Meta</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Requirements</span>
                                 <div class="text-sm font-medium text-gray-800 whitespace-pre-wrap mt-1" x-text="selectedItem.general_requirements || '—'"></div>
                             </div>
                         </div>
@@ -373,11 +373,11 @@
                     <template x-if="activeTab === 'venues'">
                         <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Region Category</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Region</span>
                                 <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.region || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Capacity Maximum</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Capacity</span>
                                 <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.capacity ? selectedItem.capacity + ' pax' : '—'"></span>
                             </div>
                             <div class="col-span-2">
@@ -385,19 +385,19 @@
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
                             </div>
                             <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Operating Hours Span</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Hours</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.operating_hours || '—'"></span>
                             </div>
                             <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Description Overview</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Description</span>
                                 <p class="text-sm text-gray-600 whitespace-pre-wrap mt-0.5" x-text="selectedItem.description || '—'"></p>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Bookings Terms Matrix</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Terms & Bookings</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.bookings_and_terms || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Internal Remarks</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Remarks</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.remarks || '—'"></span>
                             </div>
                         </div>
@@ -406,31 +406,31 @@
                     <template x-if="activeTab === 'ecosystem'">
                         <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Resource Type</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Type</span>
                                 <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.type || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Space</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Address</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Phone Connection</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Phone</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.phone || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Email Address</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Email</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.email || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Operating Windows</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Hours</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.operating_hours || '—'"></span>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Website Domain</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Website</span>
                                 <a :href="selectedItem.website" target="_blank" class="text-sm font-semibold text-orange-600 hover:underline" x-text="selectedItem.website || '—'"></a>
                             </div>
                             <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Resource Scope Description</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Description</span>
                                 <p class="text-sm text-gray-600 whitespace-pre-wrap mt-0.5" x-text="selectedItem.description || '—'"></p>
                             </div>
                         </div>
@@ -439,7 +439,7 @@
 
                 <div class="space-y-6 border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
                     <div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Classification System</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Tags</h4>
                         <div class="flex flex-wrap gap-1.5">
                             <template x-for="tag in getArrayFromTags(selectedItem.tags)" :key="tag">
                                 <span class="px-2 py-0.5 bg-orange-50 text-orange-700 border border-orange-100 rounded text-xs font-medium" x-text="tag"></span>
@@ -450,14 +450,14 @@
 
                     <template x-if="['funds', 'venues', 'ecosystem'].includes(activeTab)">
                         <div class="pt-4 border-t">
-                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Interaction Ledger</h4>
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Engagements</h4>
                             <div class="bg-gray-50 border rounded-xl p-4 text-center">
                                 <span class="block text-2xl font-black text-gray-900" x-text="selectedItem.total_engagements || 0"></span>
-                                <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">Total Documented Hits</span>
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">Total Logs</span>
                             </div>
                             
                             <div class="mt-4 space-y-2">
-                                <div class="text-[11px] font-medium text-gray-500">Latest Tracking Marker:</div>
+                                <div class="text-[11px] font-medium text-gray-500">Latest Log:</div>
                                 <div class="bg-white border rounded-lg p-3 text-xs shadow-sm">
                                     <template x-if="selectedItem.latest_engagement">
                                         <div>
@@ -479,8 +479,8 @@
             </div>
 
             <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                <button @click="triggerDeleteAction(selectedItem)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Purge Entry Record</button>
-                <button @click="profileModalOpen = false" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Close Window View</button>
+                <button @click="triggerDeleteAction(selectedItem)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Delete Record</button>
+                <button @click="profileModalOpen = false" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Close</button>
             </div>
         </div>
     </div>
@@ -490,7 +490,7 @@
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Map Spreadsheet Headers</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Align columns found in your uploaded file with your target schema.</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Align your file columns with destination fields.</p>
                 </div>
                 <button @click="mappingModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -500,7 +500,7 @@
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
                 <div class="grid grid-cols-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b">
                     <span>File Column Header</span>
-                    <span>Maps To Database Property</span>
+                    <span>Database Field</span>
                 </div>
 
                 <div class="space-y-3">
@@ -510,21 +510,21 @@
                             <div>
                                 <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium focus:ring-1 focus:ring-orange-500">
                                     <option value="ignore">Skip / Ignore Column</option>
-                                    <option value="name">Core Field: Name</option>
-                                    <option value="about" x-show="activeTab === 'funds'">Fund Field: About</option>
-                                    <option value="general_requirements" x-show="activeTab === 'funds'">Fund Field: General Requirements</option>
-                                    <option value="type" x-show="activeTab === 'ecosystem'">Ecosystem Field: Type</option>
-                                    <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Location</option>
-                                    <option value="region" x-show="activeTab === 'venues'">Venue Field: Region</option>
-                                    <option value="capacity" x-show="activeTab === 'venues'">Venue Field: Capacity</option>
-                                    <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Operating Hours</option>
-                                    <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Field: Description</option>
-                                    <option value="bookings_and_terms" x-show="activeTab === 'venues'">Venue Field: Bookings & Terms</option>
-                                    <option value="tags" x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)">Field: Tags (Comma Separated)</option>
-                                    <option value="remarks" x-show="activeTab === 'venues'">Venue Field: Remarks</option>
-                                    <option value="phone" x-show="activeTab === 'ecosystem'">Ecosystem Field: Phone</option>
-                                    <option value="email" x-show="activeTab === 'ecosystem'">Ecosystem Field: Email</option>
-                                    <option value="website" x-show="activeTab === 'ecosystem'">Ecosystem Field: Website</option>
+                                    <option value="name">Name</option>
+                                    <option value="about" x-show="activeTab === 'funds'">About</option>
+                                    <option value="general_requirements" x-show="activeTab === 'funds'">Requirements</option>
+                                    <option value="type" x-show="activeTab === 'ecosystem'">Type</option>
+                                    <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Location</option>
+                                    <option value="region" x-show="activeTab === 'venues'">Region</option>
+                                    <option value="capacity" x-show="activeTab === 'venues'">Capacity</option>
+                                    <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Hours</option>
+                                    <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Description</option>
+                                    <option value="bookings_and_terms" x-show="activeTab === 'venues'">Terms & Bookings</option>
+                                    <option value="tags" x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)">Tags</option>
+                                    <option value="remarks" x-show="activeTab === 'venues'">Remarks</option>
+                                    <option value="phone" x-show="activeTab === 'ecosystem'">Phone</option>
+                                    <option value="email" x-show="activeTab === 'ecosystem'">Email</option>
+                                    <option value="website" x-show="activeTab === 'ecosystem'">Website</option>
                                 </select>
                             </div>
                         </div>
@@ -534,7 +534,7 @@
 
             <div class="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
                 <button @click="mappingModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                <button @click="executeMappedImport()" class="px-5 py-2 bg-orange-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-orange-600 shadow transition">Confirm & Process File</button>
+                <button @click="executeMappedImport()" class="px-5 py-2 bg-orange-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-orange-600 shadow transition">Process File</button>
             </div>
         </div>
     </div>
@@ -543,20 +543,20 @@
         <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
             <div class="px-6 py-4 bg-rose-50 border-b border-rose-100 text-rose-950 flex justify-between items-center">
                 <div>
-                    <h3 class="text-base font-bold">Duplicate Integrity Detection Fault</h3>
-                    <p class="text-xs text-rose-700/80 mt-0.5 font-medium">Systems isolated primary key clashes inside your incoming dataset array.</p>
+                    <h3 class="text-base font-bold">Duplicate Found</h3>
+                    <p class="text-xs text-rose-700/80 mt-0.5 font-medium">Clashes found between the uploaded rows and current dataset.</p>
                 </div>
             </div>
             
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
-                <p class="text-xs text-gray-500 leading-relaxed">The following resource profiles share identical names with configurations stored in your cloud cluster schema. Select fallback pipeline routines:</p>
+                <p class="text-xs text-gray-500 leading-relaxed">Choose how to handle the following matching records:</p>
                 
                 <div class="space-y-2.5">
                     <template x-for="c in conflictsStaged" :key="c.name">
                         <div class="p-3 bg-gray-50 border rounded-xl flex items-center justify-between">
                             <span class="text-sm font-semibold text-gray-800 truncate max-w-[240px]" x-text="c.name"></span>
                             <select x-model="c.resolution" class="px-2 py-1.5 bg-white border rounded-lg text-xs font-bold text-gray-600 focus:ring-1 focus:ring-orange-500">
-                                <option value="skip">Skip & Omit File Row</option>
+                                <option value="skip">Skip / Omit Row</option>
                                 <option value="rename">Append (Duplicate) Suffix</option>
                             </select>
                         </div>
@@ -565,14 +565,14 @@
             </div>
 
             <div class="px-6 py-3.5 bg-gray-50 border-t flex justify-end space-x-2">
-                <button @click="resolveStagedConflicts()" class="px-5 py-2 bg-rose-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-rose-700 shadow transition">Apply Ingestion Fixes</button>
+                <button @click="resolveStagedConflicts()" class="px-5 py-2 bg-rose-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-rose-700 shadow transition">Apply Fixes</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://your-supabase-url.supabase.co"; 
-        const SUPABASE_KEY = "your-anon-key";
+        const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co"; 
+        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function crmApp() {
@@ -628,7 +628,7 @@
                         this.venues = vRes.data || [];
                         this.ecosystem = eRes.data || [];
                     } catch (err) {
-                        console.error("Database connection fault:", err);
+                        console.error("Database error:", err);
                     }
                 },
 
@@ -692,12 +692,12 @@
                 },
 
                 async triggerDeleteAction(item) {
-                    if (!confirm(`Are you absolutely sure you want to drop record file: "${item.name}" from database servers?`)) return;
+                    if (!confirm(`Are you sure you want to delete: "${item.name}"?`)) return;
                     const { error } = await supabaseClient.from(this.activeTab).delete().eq('name', item.name);
-                    if (error) return alert(`Deletion pipeline failed: ${error.message}`);
+                    if (error) return alert(`Delete failed: ${error.message}`);
                     this[this.activeTab] = this[this.activeTab].filter(i => i.name !== item.name);
                     this.profileModalOpen = false;
-                    alert("Record permanently expunged.");
+                    alert("Record deleted.");
                 },
 
                 async executeManualCreation() {
@@ -718,10 +718,10 @@
                         payload = { ...payload, type: this.creationForm.type, location: this.creationForm.location, phone: this.creationForm.phone, email: this.creationForm.email, operating_hours: this.creationForm.operating_hours, website: this.creationForm.website, description: this.creationForm.description };
                     }
 
-                    if (this.findByName(type, payload.name)) return alert("An entry entity with this identifier already exists inside local memory state.");
+                    if (this.findByName(type, payload.name)) return alert("A record with this name already exists.");
 
                     const { data, error } = await supabaseClient.from(type).insert([payload]).select();
-                    if (error) return alert(`Save operation aborted: ${error.message}`);
+                    if (error) return alert(`Save failed: ${error.message}`);
 
                     this[type].push(data[0]);
                     this.creationModalOpen = false;
@@ -746,7 +746,7 @@
                 async submitLog() {
                     const targetTab = this.logForm.category;
                     const targetItem = this.findByName(targetTab, this.logForm.name);
-                    if (!targetItem) return alert("Selected tracking entity target name target not found inside structural cache states.");
+                    if (!targetItem) return alert("Target record not found.");
 
                     const logObject = {
                         username_handle: this.logForm.username,
@@ -761,18 +761,18 @@
                         .update({ total_engagements: updatedEngagements, latest_engagement: logObject })
                         .eq('name', targetItem.name);
 
-                    if (error) return alert(`Failed to update database schema log parameters: ${error.message}`);
+                    if (error) return alert(`Failed to update log: ${error.message}`);
 
                     targetItem.total_engagements = updatedEngagements;
                     targetItem.latest_engagement = logObject;
 
-                    alert(`Interaction metric successfully appended onto object entity!`);
+                    alert(`Log added successfully!`);
                     this.logForm = { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' };
                 },
 
                 exportCurrentTable() {
                     const data = this.filteredData();
-                    if(!data.length) return alert("No parameters isolated to extract.");
+                    if(!data.length) return alert("No entries to export.");
                     const csv = Papa.unparse(data);
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement("a");
@@ -842,7 +842,7 @@
                     });
 
                     if (inserts.length) await this.commitBatchToCloud(inserts);
-                    else alert('Import processing finalized.');
+                    else alert('Import process complete.');
                     this.conflictModalOpen = false;
                 },
 
@@ -860,14 +860,14 @@
                     if (!records.length) return;
                     const { error } = await supabaseClient.from(this.activeTab).insert(records);
                     if (error) {
-                        console.error('Cloud ingestion aborted:', error);
-                        alert(`Failed to batch import rows to Supabase: ${error.message}`);
+                        console.error('Import failed:', error);
+                        alert(`Failed to import rows: ${error.message}`);
                         return;
                     }
                     records.forEach(record => {
                         if (!this.findByName(this.activeTab, record.name)) this[this.activeTab].push(record);
                     });
-                    alert('Import complete! Data successfully synchronized across dataset layers.');
+                    alert('Import complete! Data synchronized.');
                 }
             };
         }
