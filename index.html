@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resource List v2.1</title>
+    <title>Resource List v2.2</title>
     
+    <!-- Required Client Framework Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen" x-data="crmApp()">
 
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <!-- Main Site Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">RL</div>
-                <span class="font-bold text-lg tracking-tight">Resource List v2.1</span>
+                <div class="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">RL</div>
+                <span class="font-bold text-lg tracking-tight">Resource List v2.2</span>
             </div>
             
-            <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+            <nav class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
                 <template x-for="tab in ['Funds', 'Venues', 'Ecosystem', 'Logger']">
                     <button 
                         @click="activeTab = tab.toLowerCase(); searchQuery = '';"
-                        :class="activeTab === tab.toLowerCase() ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-orange-600'"
+                        :class="activeTab === tab.toLowerCase() ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600'"
                         class="px-4 py-2 font-medium text-xs rounded-lg transition-all duration-150 uppercase tracking-wider"
                         x-text="tab === 'Ecosystem' ? 'Resources' : (tab === 'Logger' ? 'Log Engagement' : tab)">
                     </button>
@@ -32,28 +34,31 @@
         </div>
     </header>
 
+    <!-- Main Dynamic Interface Layout Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        <!-- Tab Tables Section (Funds, Venues, Resources) -->
         <div x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)" x-transition class="space-y-6">
             
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
+            <!-- Toolbar: Search Bar, Filters, Action Triggers -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
                 
                 <div class="flex flex-col sm:flex-row flex-1 gap-3 max-w-2xl">
                     <div class="relative flex-1">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </span>
                         <input 
                             type="text" 
                             x-model="searchQuery"
                             :placeholder="activeTab === 'ecosystem' ? 'Search resources...' : 'Search ' + activeTab + '...'" 
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
+                            class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm">
                     </div>
             
                     <div x-show="activeTab === 'ecosystem'" x-transition style="display: none;">
                         <select 
                             x-model="selectedTypeFilter" 
-                            class="w-full sm:w-auto px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-medium text-gray-600">
+                            class="w-full sm:w-auto px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm font-medium text-slate-600">
                             <option value="">All Types</option>
                             <template x-for="t in getUniqueTypes()" :key="t">
                                 <option :value="t" x-text="t"></option>
@@ -63,17 +68,17 @@
                 </div>
                 
                 <div class="flex items-center space-x-2 flex-wrap gap-y-2">
-                    <button @click="openCreationModal()" class="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition">
+                    <button @click="openCreationModal()" class="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-teal-600 hover:bg-teal-700 transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         <span>Add <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resource' : (activeTab === 'funds' ? 'Fund' : 'Venue')"></span></span>
                     </button>
 
-                    <button @click="exportCurrentTable()" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
-                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <button @click="exportCurrentTable()" class="inline-flex items-center justify-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition">
+                        <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <span>Export CSV</span>
                     </button>
 
-                    <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-orange-500 hover:bg-orange-600 transition">
+                    <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         <span>Import <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resources' : activeTab"></span></span>
                         <input type="file" id="fileImporter" accept=".csv" class="hidden" @change="handleFileIntercept($event)">
@@ -82,55 +87,56 @@
             
             </div>
 
-            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <!-- Table UI Panel Representation -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                 <div class="w-full overflow-x-auto">
-                    <table class="min-w-full table-auto divide-y divide-gray-200 text-left text-sm whitespace-nowrap">
-                        <thead class="bg-gray-50 font-semibold text-gray-500 uppercase tracking-wider text-[10px] select-none">
+                    <table class="min-w-full table-auto divide-y divide-slate-200 text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 font-semibold text-slate-500 uppercase tracking-wider text-[10px] select-none">
                             <tr>
-                                <th @click="sortBy('name')" class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[200px]">
+                                <th @click="sortBy('name')" class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition min-w-[200px]">
                                     <div class="flex items-center space-x-1">
                                         <span>Name</span>
-                                        <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-orange-600 text-[8px]"></span>
+                                        <span x-show="sortColumn === 'name'" x-text="sortAscending ? '▲' : '▼'" class="text-teal-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[200px]"
+                                <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition min-w-[200px]"
                                     @click="sortBy(activeTab === 'funds' ? 'about' : (activeTab === 'ecosystem' ? 'type' : 'location'))">
                                     <div class="flex items-center space-x-1">
                                         <span x-text="activeTab === 'funds' ? 'About' : (activeTab === 'ecosystem' ? 'Type' : 'Location')"></span>
-                                        <span x-show="['about', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-orange-600 text-[8px]"></span>
+                                        <span x-show="['about', 'type', 'location'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-teal-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th class="px-6 py-4 cursor-pointer hover:bg-gray-100 transition min-w-[250px]"
+                                <th class="px-6 py-4 cursor-pointer hover:bg-slate-100 transition min-w-[250px]"
                                     @click="sortBy(activeTab === 'funds' ? 'general_requirements' : (activeTab === 'ecosystem' ? 'location' : 'capacity'))">
                                     <div class="flex items-center space-x-1">
                                         <span x-text="activeTab === 'funds' ? 'Requirements' : (activeTab === 'ecosystem' ? 'Location' : 'Region / Capacity')"></span>
-                                        <span x-show="['general_requirements', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-orange-600 text-[8px]"></span>
+                                        <span x-show="['general_requirements', 'location', 'capacity'].includes(sortColumn)" x-text="sortAscending ? '▲' : '▼'" class="text-teal-600 text-[8px]"></span>
                                     </div>
                                 </th>
-                                <th @click="sortBy('total_engagements')" class="px-6 py-4 text-center cursor-pointer hover:bg-gray-100 transition min-w-[120px]">
+                                <th @click="sortBy('total_engagements')" class="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 transition min-w-[120px]">
                                     <div class="flex items-center justify-center space-x-1">
                                         <span>Engagements</span>
-                                        <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-orange-600 text-[8px]"></span>
+                                        <span x-show="sortColumn === 'total_engagements'" x-text="sortAscending ? '▲' : '▼'" class="text-teal-600 text-[8px]"></span>
                                     </div>
                                 </th>
                                 <th class="px-6 py-4 min-w-[150px]">Tags</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody class="divide-y divide-slate-200">
                             <template x-for="item in paginatedData()" :key="item.name">
-                                <tr @click="openProfile(item)" class="even:bg-gray-50/60 hover:bg-orange-50/50 cursor-pointer transition">
-                                    <td class="px-6 py-4 font-semibold text-orange-600" x-text="item.name"></td>
-                                    <td class="px-6 py-4 text-gray-500" x-text="activeTab === 'funds' ? item.about : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
-                                    <td class="px-6 py-4 text-gray-500" x-text="activeTab === 'funds' ? item.general_requirements : (activeTab === 'ecosystem' ? item.location : (item.region ? '[' + item.region + '] ' : '') + (item.capacity ? item.capacity + ' pax' : '—'))"></td>
+                                <tr @click="openProfile(item)" class="even:bg-slate-50/60 hover:bg-slate-50 cursor-pointer transition">
+                                    <td class="px-6 py-4 font-semibold text-teal-700" x-text="item.name"></td>
+                                    <td class="px-6 py-4 text-slate-500" x-text="activeTab === 'funds' ? item.about : (activeTab === 'ecosystem' ? item.type : item.location || '—')"></td>
+                                    <td class="px-6 py-4 text-slate-500" x-text="activeTab === 'funds' ? item.general_requirements : (activeTab === 'ecosystem' ? item.location : (item.region ? '[' + item.region + '] ' : '') + (item.capacity ? item.capacity + ' pax' : '—'))"></td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="px-2 py-1 bg-gray-100 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
+                                        <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-full font-bold text-xs" x-text="item.total_engagements"></span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-wrap gap-1 max-w-[200px]">
                                             <template x-for="tag in getArrayFromTags(item.tags)" :key="tag">
-                                                <span class="px-1.5 py-0.5 bg-orange-50 text-orange-700 rounded text-[9px] font-medium border border-orange-100" x-text="tag"></span>
+                                                <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[9px] font-medium border border-indigo-100" x-text="tag"></span>
                                             </template>
-                                            <span x-show="!item.tags || getArrayFromTags(item.tags).length === 0" class="text-gray-300 text-xs italic">None</span>
+                                            <span x-show="!item.tags || getArrayFromTags(item.tags).length === 0" class="text-slate-300 text-xs italic">None</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -140,36 +146,38 @@
                 </div>
             </div> 
             
-            <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mt-4">
+            <!-- Table Foot Pagination Elements -->
+            <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm mt-4">
                 <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
-                        <p class="text-sm text-gray-700">
+                        <p class="text-sm text-slate-700">
                             Showing entries <span class="font-semibold" x-text="((currentPage - 1) * itemsPerPage) + 1"></span> to <span class="font-semibold" x-text="Math.min(currentPage * itemsPerPage, filteredData().length)"></span> of <span class="font-semibold" x-text="filteredData().length"></span> results
                         </p>
                     </div>
                     <div>
                         <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-2">
-                            <button @click="currentPage = 1" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">First</button>
-                            <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Prev</button>
-                            <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border rounded-lg">
-                                Page <span class="mx-1 text-orange-600" x-text="currentPage"></span> of <span class="ml-1" x-text="totalPages()"></span>
+                            <button @click="currentPage = 1" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 text-slate-600">First</button>
+                            <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 text-slate-600">Prev</button>
+                            <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-300 rounded-lg">
+                                Page <span class="mx-1 text-teal-600" x-text="currentPage"></span> of <span class="ml-1" x-text="totalPages()"></span>
                             </span>
-                            <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Next</button>
-                            <button @click="currentPage = totalPages()" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Last</button>
+                            <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 text-slate-600">Next</button>
+                            <button @click="currentPage = totalPages()" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 text-slate-600">Last</button>
                         </nav>
                     </div>
                 </div>
             </div>
         </div> 
 
+        <!-- Tab Panel: Logger Engine Interaction Entry -->
         <div x-show="activeTab === 'logger'" x-transition class="max-w-2xl mx-auto" style="display: none;">
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
-                <h2 class="text-2xl font-bold text-gray-900">Log Engagement</h2>
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-slate-900">Log Engagement</h2>
                 
                 <form @submit.prevent="submitLog()" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Category *</label>
-                        <select x-model="logForm.category" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Category *</label>
+                        <select x-model="logForm.category" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
                             <option value="funds">Funds</option>
                             <option value="venues">Venues</option>
                             <option value="ecosystem">Resources</option>
@@ -177,68 +185,69 @@
                     </div>
 
                     <div class="relative">
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Name *</label>
-                        <input type="text" x-model="logForm.name" @focus="dropdownOpen = true" @click.away="dropdownOpen = false" placeholder="Search..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Name *</label>
+                        <input type="text" x-model="logForm.name" @focus="dropdownOpen = true" @click.away="dropdownOpen = false" placeholder="Search..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
                         
-                        <div x-show="dropdownOpen && dropdownResults().length > 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                        <div x-show="dropdownOpen && dropdownResults().length > 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
                             <template x-for="res in dropdownResults()">
-                                <button @click="logForm.name = res; dropdownOpen = false" type="button" class="w-full text-left px-4 py-2 hover:bg-orange-50 text-sm" x-text="res"></button>
+                                <button @click="logForm.name = res; dropdownOpen = false" type="button" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm text-slate-700" x-text="res"></button>
                             </template>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Officer *</label>
-                            <input type="text" x-model="logForm.username" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Officer *</label>
+                            <input type="text" x-model="logForm.username" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Sentiment *</label>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Sentiment *</label>
                             <div class="flex space-x-2">
                                 <template x-for="s in ['Good', 'Neutral', 'Bad']">
-                                    <button type="button" @click="logForm.sentiment = s" :class="logForm.sentiment === s ? sentimentClasses(s) : 'bg-gray-100 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition" x-text="s"></button>
+                                    <button type="button" @click="logForm.sentiment = s" :class="logForm.sentiment === s ? sentimentClasses(s) : 'bg-slate-100 text-slate-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition" x-text="s"></button>
                                 </template>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Notes</label>
-                        <textarea x-model="logForm.notes" rows="4" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Notes</label>
+                        <textarea x-model="logForm.notes" rows="4" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 shadow-lg transition">Submit Log</button>
+                    <button type="submit" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl hover:bg-teal-700 shadow-lg transition">Submit Log</button>
                 </form>
             </div>
         </div>
     </main>
 
-    <div x-show="creationModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+    <!-- Modal Panel: Profile Creation and Modification Framework -->
+    <div x-show="creationModalOpen" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Create / Update Profile</h3>
+                    <h3 class="text-lg font-bold text-slate-900">Create / Update Profile</h3>
                 </div>
-                <button @click="creationModalOpen = false" class="text-gray-400 hover:text-gray-600">
+                <button @click="creationModalOpen = false" class="text-slate-400 hover:text-slate-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <form @submit.prevent="executeManualCreation()" class="flex-1 overflow-y-auto p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Name *</label>
-                    <input type="text" x-model="creationForm.name" required class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Name *</label>
+                    <input type="text" x-model="creationForm.name" required class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500">
                 </div>
 
                 <template x-if="activeTab === 'funds'">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">About</label>
-                            <textarea x-model="creationForm.about" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">About</label>
+                            <textarea x-model="creationForm.about" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Requirements</label>
-                            <textarea x-model="creationForm.general_requirements" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Requirements</label>
+                            <textarea x-model="creationForm.general_requirements" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm"></textarea>
                         </div>
                     </div>
                 </template>
@@ -246,8 +255,8 @@
                 <template x-if="activeTab === 'venues'">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Region *</label>
-                            <select x-model="creationForm.region" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Region *</label>
+                            <select x-model="creationForm.region" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                                 <option value="">Select Region...</option>
                                 <option value="East">East</option>
                                 <option value="South">South</option>
@@ -256,12 +265,12 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Capacity</label>
-                            <input type="text" x-model="creationForm.capacity" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Capacity</label>
+                            <input type="text" x-model="creationForm.capacity" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
-                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Location Address</label>
+                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                         </div>
                     </div>
                 </template>
@@ -269,120 +278,151 @@
                 <template x-if="activeTab === 'ecosystem'">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Type</label>
-                            <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Type</label>
+                            <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
-                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Location Address</label>
+                            <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                         </div>
                     </div>
                 </template>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Tags (Comma Separated)</label>
-                    <input type="text" x-model="creationForm.tags" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Tags (Comma Separated)</label>
+                    <input type="text" x-model="creationForm.tags" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm">
                 </div>
 
                 <div class="pt-4 border-t flex justify-end space-x-3">
-                    <button type="button" @click="creationModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-gray-600 hover:bg-gray-100">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-emerald-700 shadow">Save Record</button>
+                    <button type="button" @click="creationModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-teal-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-teal-700 shadow">Save Record</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div x-show="profileModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden" @click.away="profileModalOpen = false">
-            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+    <!-- Modal Panel: Detailed Resource Inspection Profile -->
+    <div x-show="profileModalOpen" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden" @click.away="profileModalOpen = false">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="text-xl font-bold text-gray-900" x-text="selectedItem.name"></h3>
-                    <p class="text-xs text-gray-500 mt-0.5 uppercase tracking-wider font-semibold">Category: <span class="text-orange-600" x-text="activeTab"></span></p>
+                    <h3 class="text-xl font-bold text-slate-900" x-text="selectedItem.name"></h3>
+                    <p class="text-xs text-slate-500 mt-0.5 uppercase tracking-wider font-semibold">Category: <span class="text-teal-600" x-text="activeTab"></span></p>
                 </div>
-                <button @click="profileModalOpen = false" class="text-gray-400 hover:text-gray-600">
+                <button @click="profileModalOpen = false" class="text-slate-400 hover:text-slate-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Left Details Configuration Column -->
                 <div class="md:col-span-2 space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b pb-2">Details</h4>
-                    
-                    <template x-if="activeTab === 'funds'">
-                        <div class="grid grid-cols-1 gap-4 bg-gray-50 p-4 rounded-xl border">
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">About</span>
-                                <div class="text-sm font-medium text-gray-800 whitespace-pre-wrap mt-1" x-text="selectedItem.about || '—'"></div>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 border-b pb-2 mb-3">Details</h4>
+                        
+                        <template x-if="activeTab === 'funds'">
+                            <div class="grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">About</span>
+                                    <div class="text-sm font-medium text-slate-800 whitespace-pre-wrap mt-1" x-text="selectedItem.about || '—'"></div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Requirements</span>
+                                    <div class="text-sm font-medium text-slate-800 whitespace-pre-wrap mt-1" x-text="selectedItem.general_requirements || '—'"></div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Requirements</span>
-                                <div class="text-sm font-medium text-gray-800 whitespace-pre-wrap mt-1" x-text="selectedItem.general_requirements || '—'"></div>
-                            </div>
-                        </div>
-                    </template>
+                        </template>
 
-                    <template x-if="activeTab === 'venues'">
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Region</span>
-                                <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.region || '—'"></span>
+                        <template x-if="activeTab === 'venues'">
+                            <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Region</span>
+                                    <span class="text-sm font-semibold text-slate-800" x-text="selectedItem.region || '—'"></span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Capacity</span>
+                                    <span class="text-sm font-semibold text-slate-800" x-text="selectedItem.capacity ? selectedItem.capacity + ' pax' : '—'"></span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Location Address</span>
+                                    <span class="text-sm font-medium text-slate-700" x-text="selectedItem.location || '—'"></span>
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Capacity</span>
-                                <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.capacity ? selectedItem.capacity + ' pax' : '—'"></span>
-                            </div>
-                            <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Address</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
-                            </div>
-                        </div>
-                    </template>
+                        </template>
 
-                    <template x-if="activeTab === 'ecosystem'">
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border">
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Type</span>
-                                <span class="text-sm font-semibold text-gray-800" x-text="selectedItem.type || '—'"></span>
+                        <template x-if="activeTab === 'ecosystem'">
+                            <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Type</span>
+                                    <span class="text-sm font-semibold text-slate-800" x-text="selectedItem.type || '—'"></span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Location Address</span>
+                                    <span class="text-sm font-medium text-slate-700" x-text="selectedItem.location || '—'"></span>
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Address</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
-                            </div>
+                        </template>
+                    </div>
+
+                    <!-- New Historical Engagement Logs Section Trigger -->
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 border-b pb-2 mb-3">All Engagement History Logs</h4>
+                        <div class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <template x-for="log in historicalLogs" :key="log.id">
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs shadow-sm flex flex-col space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-bold text-slate-800" x-text="log.username"></span>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider" 
+                                                  :class="log.sentiment === 'Good' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (log.sentiment === 'Bad' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200')"
+                                                  x-text="log.sentiment"></span>
+                                        </div>
+                                        <span class="text-[10px] font-semibold text-slate-400" x-text="formatDateString(log.timestamp)"></span>
+                                    </div>
+                                    <p class="text-slate-600 leading-relaxed font-medium whitespace-pre-wrap" x-text="log.notes || 'No extended notes provided for this engagement.'"></p>
+                                </div>
+                            </template>
+                            <template x-if="historicalLogs.length === 0">
+                                <div class="text-center py-6 border border-dashed border-slate-300 rounded-xl text-slate-400 italic text-xs">
+                                    No historical logs matching this profile exist in the tracking index.
+                                </div>
+                            </template>
                         </div>
-                    </template>
+                    </div>
                 </div>
 
-                <div class="space-y-6 border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
+                <!-- Right Metadata Panel Column -->
+                <div class="space-y-6 border-t md:border-t-0 md:border-l border-slate-200 pt-6 md:pt-0 md:pl-6">
                     <div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Tags</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Tags</h4>
                         <div class="flex flex-wrap gap-1.5">
                             <template x-for="tag in getArrayFromTags(selectedItem.tags)" :key="tag">
-                                <span class="px-2 py-0.5 bg-orange-50 text-orange-700 border border-orange-100 rounded text-xs font-medium" x-text="tag"></span>
+                                <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-xs font-medium" x-text="tag"></span>
                             </template>
-                            <span x-show="!selectedItem.tags || getArrayFromTags(selectedItem.tags).length === 0" class="text-xs text-gray-400 italic">No tags associated</span>
+                            <span x-show="!selectedItem.tags || getArrayFromTags(selectedItem.tags).length === 0" class="text-xs text-slate-400 italic">No tags associated</span>
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t">
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Engagements</h4>
-                        <div class="bg-gray-50 border rounded-xl p-4 text-center">
-                            <span class="block text-2xl font-black text-gray-900" x-text="selectedItem.total_engagements || 0"></span>
+                    <div class="pt-4 border-t border-slate-200">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Engagements Summary</h4>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                            <span class="block text-2xl font-black text-slate-900" x-text="selectedItem.total_engagements || 0"></span>
                         </div>
                         
                         <div class="mt-4 space-y-2">
-                            <div class="text-[11px] font-medium text-gray-500">Latest Log:</div>
-                            <div class="bg-white border rounded-lg p-3 text-xs shadow-sm">
+                            <div class="text-[11px] font-medium text-slate-500">Latest Active Log:</div>
+                            <div class="bg-white border border-slate-200 rounded-lg p-3 text-xs shadow-sm">
                                 <template x-if="selectedItem.latest_engagement">
                                     <div>
-                                        <div class="flex justify-between font-bold text-gray-800">
+                                        <div class="flex justify-between font-bold text-slate-800">
                                             <span x-text="selectedItem.latest_engagement.username_handle"></span>
-                                            <span class="text-[10px] uppercase text-orange-600" x-text="selectedItem.latest_engagement.relationship_sentiment"></span>
+                                            <span class="text-[10px] uppercase text-teal-600" x-text="selectedItem.latest_engagement.relationship_sentiment"></span>
                                         </div>
-                                        <p class="text-gray-600 mt-1" x-text="selectedItem.latest_engagement.interaction_narrative"></p>
+                                        <p class="text-slate-600 mt-1" x-text="selectedItem.latest_engagement.interaction_narrative"></p>
                                     </div>
                                 </template>
                                 <template x-if="!selectedItem.latest_engagement">
-                                    <span class="text-gray-400 italic">No logs recorded yet.</span>
+                                    <span class="text-slate-400 italic">No logs recorded yet.</span>
                                 </template>
                             </div>
                         </div>
@@ -390,36 +430,37 @@
                 </div>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
                 <button @click="triggerDeleteAction(selectedItem)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold uppercase rounded-lg">Delete Record</button>
-                <button @click="profileModalOpen = false" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold uppercase rounded-lg">Close</button>
+                <button @click="profileModalOpen = false" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold uppercase rounded-lg">Close</button>
             </div>
         </div>
     </div>
 
-    <div x-show="mappingModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+    <!-- Modal Panel: Dynamic CSV Import Header Mapping Selector -->
+    <div x-show="mappingModalOpen" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Map Spreadsheet Headers</h3>
+                    <h3 class="text-lg font-bold text-slate-900">Map Spreadsheet Headers</h3>
                 </div>
-                <button @click="mappingModalOpen = false" class="text-gray-400 hover:text-gray-600">
+                <button @click="mappingModalOpen = false" class="text-slate-400 hover:text-slate-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
-                <div class="grid grid-cols-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 pb-2 border-b">
+                <div class="grid grid-cols-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 pb-2 border-b">
                     <span>File Column Header</span>
                     <span>Database Field</span>
                 </div>
 
                 <div class="space-y-3">
                     <template x-for="header in uploadedHeaders" :key="header">
-                        <div class="grid grid-cols-2 gap-4 items-center bg-gray-50/50 p-3 rounded-xl border border-gray-150">
-                            <span class="font-mono text-sm text-gray-700 truncate font-semibold" x-text="header"></span>
+                        <div class="grid grid-cols-2 gap-4 items-center bg-slate-50/50 p-3 rounded-xl border border-slate-200">
+                            <span class="font-mono text-sm text-slate-700 truncate font-semibold" x-text="header"></span>
                             <div>
-                                <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium">
+                                <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-medium text-slate-700">
                                     <option value="ignore">Skip / Ignore Column</option>
                                     <option value="name">Name</option>
                                     <option value="about" x-show="activeTab === 'funds'">About</option>
@@ -436,14 +477,15 @@
                 </div>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
-                <button @click="mappingModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-gray-600 hover:bg-gray-100">Cancel</button>
-                <button @click="executeMappedImport()" class="px-5 py-2 bg-orange-500 text-white text-xs font-bold uppercase rounded-lg hover:bg-orange-600 shadow">Process File</button>
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-3">
+                <button @click="mappingModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-slate-600 hover:bg-slate-100">Cancel</button>
+                <button @click="executeMappedImport()" class="px-5 py-2 bg-teal-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-teal-700 shadow">Process File</button>
             </div>
         </div>
     </div>
 
-    <div x-show="conflictModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
+    <!-- Modal Panel: Ingestion Primary Key Name Duplication Conflict Handler -->
+    <div x-show="conflictModalOpen" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
             <div class="px-6 py-4 bg-rose-50 border-b border-rose-100 text-rose-950">
                 <h3 class="text-base font-bold">Duplicate Found</h3>
@@ -452,9 +494,9 @@
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
                 <div class="space-y-2.5">
                     <template x-for="c in conflictsStaged" :key="c.name">
-                        <div class="p-3 bg-gray-50 border rounded-xl flex items-center justify-between">
-                            <span class="text-sm font-semibold text-gray-800 truncate max-w-[240px]" x-text="c.name"></span>
-                            <select x-model="c.resolution" class="px-2 py-1.5 bg-white border rounded-lg text-xs font-bold text-gray-600">
+                        <div class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                            <span class="text-sm font-semibold text-slate-800 truncate max-w-[240px]" x-text="c.name"></span>
+                            <select x-model="c.resolution" class="px-2 py-1.5 bg-white border rounded-lg text-xs font-bold text-slate-600">
                                 <option value="skip">Skip / Omit Row</option>
                                 <option value="rename">Append (Duplicate) Suffix</option>
                             </select>
@@ -463,15 +505,16 @@
                 </div>
             </div>
 
-            <div class="px-6 py-3.5 bg-gray-50 border-t flex justify-end space-x-2">
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end space-x-2">
                 <button @click="resolveStagedConflicts()" class="px-5 py-2 bg-rose-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-rose-700 shadow">Apply Fixes</button>
             </div>
         </div>
     </div>
 
+    <!-- Core Runtime Application Script Engine -->
     <script>
         function crmApp() {
-            // Configuration Setup Parameters: Place your exact credentials inside these strings!
+            // Configuration Setup Parameters
             const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA";
             
@@ -490,6 +533,7 @@
                 funds: [],
                 venues: [],
                 ecosystem: [],
+                historicalLogs: [], // Active structural storage for profile view queries
 
                 creationModalOpen: false,
                 mappingModalOpen: false,
@@ -587,9 +631,37 @@
                     this.creationModalOpen = true;
                 },
 
-                openProfile(item) {
+                async openProfile(item) {
                     this.selectedItem = { ...item };
+                    this.historicalLogs = [];
                     this.profileModalOpen = true;
+
+                    // Pulls explicit historical logs submitted through the logging module for this identity
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('logs')
+                            .select('*')
+                            .eq('name', item.name)
+                            .order('timestamp', { ascending: false });
+                        
+                        if (error) throw error;
+                        this.historicalLogs = data || [];
+                    } catch (err) {
+                        console.error("Failed to parse engagement database logs:", err);
+                    }
+                },
+
+                formatDateString(isoString) {
+                    if (!isoString) return '—';
+                    try {
+                        const date = new Date(isoString);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`; // Forced compliant rendering structure
+                    } catch(e) {
+                        return isoString;
+                    }
                 },
 
                 async triggerDeleteAction(item) {
@@ -606,20 +678,21 @@
 
                 async executeManualCreation() {
                     const type = this.activeTab;
+                    // Lowercase forcing logic parameter applied cleanly to standard manual forms
                     let payload = { 
-                        name: this.creationForm.name,
-                        tags: this.creationForm.tags,
+                        name: norm(this.creationForm.name),
+                        tags: norm(this.creationForm.tags),
                         total_engagements: 0,
                         latest_engagement: null
                     };
 
                     if (type === 'funds') {
-                        payload.about = this.creationForm.about;
-                        payload.general_requirements = this.creationForm.general_requirements;
+                        payload.about = norm(this.creationForm.about);
+                        payload.general_requirements = norm(this.creationForm.general_requirements);
                     } else if (type === 'venues') {
-                        payload = { ...payload, region: this.creationForm.region, capacity: this.creationForm.capacity, location: this.creationForm.location };
+                        payload = { ...payload, region: this.creationForm.region, capacity: norm(this.creationForm.capacity), location: norm(this.creationForm.location) };
                     } else if (type === 'ecosystem') {
-                        payload = { ...payload, type: this.creationForm.type, location: this.creationForm.location };
+                        payload = { ...payload, type: norm(this.creationForm.type), location: norm(this.creationForm.location) };
                     }
 
                     if (this.findByName(type, payload.name)) return alert("Record already exists.");
@@ -645,7 +718,7 @@
                 },
 
                 sentimentClasses(s) {
-                    if (s === 'Good') return 'bg-emerald-600 text-white';
+                    if (s === 'Good') return 'bg-teal-600 text-white';
                     if (s === 'Neutral') return 'bg-amber-500 text-white';
                     return 'bg-rose-600 text-white';
                 },
@@ -656,35 +729,33 @@
                     if (!targetItem) return alert("Record not found.");
 
                     const logObject = {
-                        username_handle: this.logForm.username,
+                        username_handle: norm(this.logForm.username),
                         relationship_sentiment: this.logForm.sentiment,
-                        interaction_narrative: this.logForm.notes,
+                        interaction_narrative: norm(this.logForm.notes),
                         timestamp_marker: new Date().toISOString()
                     };
 
                     const updatedEngagements = (targetItem.total_engagements || 0) + 1;
 
                     try {
-                        // Updates the entity tracking inside its corresponding table layer
                         const { data, error } = await supabaseClient.from(targetTab)
                             .update({ total_engagements: updatedEngagements, latest_engagement: logObject })
                             .eq('name', targetItem.name)
                             .select();
                         if (error) throw error;
 
-                        // Appends log directly to the tracking log database table if it exists
                         await supabaseClient.from('logs').insert([{
-                            name: this.logForm.name,
-                            username: this.logForm.username,
+                            name: targetItem.name,
+                            username: logObject.username_handle,
                             sentiment: this.logForm.sentiment,
-                            notes: this.logForm.notes,
+                            notes: logObject.interaction_narrative,
                             timestamp: logObject.timestamp_marker
                         }]);
                         
                         targetItem.total_engagements = data[0].total_engagements;
                         targetItem.latest_engagement = data[0].latest_engagement;
                         
-                        alert(`Log added.`);
+                        alert(`Log added successfully.`);
                         this.logForm = { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' };
                     } catch(err) {
                         alert("Log submission error.");
@@ -729,7 +800,8 @@
                         let rec = { total_engagements: 0, latest_engagement: null };
                         this.uploadedHeaders.forEach(h => {
                             const target = this.headerMappings[h];
-                            if (target !== 'ignore') rec[target] = row[h];
+                            // Cleanly parameters normalizes spreadsheet uploads on processing to lowercase rows
+                            if (target !== 'ignore') rec[target] = norm(row[h]);
                         });
 
                         if (rec.name) {
@@ -768,10 +840,10 @@
 
                 nextDuplicateName(name, pending = []) {
                     let counter = 1;
-                    let candidate = `${name} (Duplicate)`;
+                    let candidate = `${name} (duplicate)`;
                     while (this.findByName(this.activeTab, candidate) || pending.some(item => norm(item.name) === norm(candidate))) {
                         counter++;
-                        candidate = `${name} (Duplicate ${counter})`;
+                        candidate = `${name} (duplicate ${counter})`;
                     }
                     return candidate;
                 },
