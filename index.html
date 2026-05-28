@@ -277,7 +277,7 @@
                             <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Operating Hours Span</label>
                             <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div class="col-span-2">
@@ -571,8 +571,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co"; 
-        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA;
+        const SUPABASE_URL = "https://your-supabase-url.supabase.co"; 
+        const SUPABASE_KEY = "your-anon-key";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function crmApp() {
@@ -604,6 +604,7 @@
                 headerMappings: {},
                 rawUploadedData: [],
                 conflictsStaged: [],
+                safeInsertsStaged: [],
 
                 async init() {
                     await this.fetchDataLayers();
@@ -823,7 +824,6 @@
                         this.conflictsStaged = conflicts;
                         this.mappingModalOpen = false;
                         this.conflictModalOpen = true;
-                        // Keep reference track of safe configurations to insert later
                         this.safeInsertsStaged = inserts;
                     } else {
                         this.commitBatchToCloud(inserts);
@@ -833,7 +833,6 @@
 
                 async resolveStagedConflicts() {
                     const inserts = [...(this.safeInsertsStaged || [])];
-                    const pendingNames = inserts.map(i => i.name);
 
                     this.conflictsStaged.forEach(c => {
                         if (c.resolution === 'rename') {
