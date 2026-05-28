@@ -10,7 +10,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data=\"crmApp()\">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
 
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
@@ -471,7 +471,7 @@
 
     <script>
         function crmApp() {
-            // Put your actual keys inside these string configurations
+            // Configuration Setup Parameters: Place your exact credentials inside these strings!
             const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA";
             
@@ -665,11 +665,21 @@
                     const updatedEngagements = (targetItem.total_engagements || 0) + 1;
 
                     try {
+                        // Updates the entity tracking inside its corresponding table layer
                         const { data, error } = await supabaseClient.from(targetTab)
                             .update({ total_engagements: updatedEngagements, latest_engagement: logObject })
                             .eq('name', targetItem.name)
                             .select();
                         if (error) throw error;
+
+                        // Appends log directly to the tracking log database table if it exists
+                        await supabaseClient.from('logs').insert([{
+                            name: this.logForm.name,
+                            username: this.logForm.username,
+                            sentiment: this.logForm.sentiment,
+                            notes: this.logForm.notes,
+                            timestamp: logObject.timestamp_marker
+                        }]);
                         
                         targetItem.total_engagements = data[0].total_engagements;
                         targetItem.latest_engagement = data[0].latest_engagement;
