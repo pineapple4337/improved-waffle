@@ -101,7 +101,7 @@ app.post('/api/:table/bulk', async (req, res) => {
 });
 
 // Delete entry
-app.delete('/api/:table', async (req, res)5 => {
+app.delete('/api/:table', async (req, res) => {
     const { table } = req.params;
     const { name } = req.body;
     try {
