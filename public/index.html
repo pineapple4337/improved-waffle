@@ -9,9 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data="crmApp()">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen" x-data=\"crmApp()\">
 
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
@@ -77,7 +76,7 @@
                     <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-orange-500 hover:bg-orange-600 transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         <span>Import <span class="capitalize" x-text="activeTab === 'ecosystem' ? 'Resources' : activeTab"></span></span>
-                        <input type="file" id="fileImporter" accept=".csv, .xlsx" class="hidden" @change="handleFileIntercept($event)">
+                        <input type="file" id="fileImporter" accept=".csv" class="hidden" @change="handleFileIntercept($event)">
                     </label>
                 </div>
             
@@ -142,31 +141,21 @@
             </div> 
             
             <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mt-4">
-                <div class="flex flex-1 justify-between sm:hidden">
-                    <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Previous</button>
-                    <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Next</button>
-                </div>
                 <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm text-gray-700">
-                            Showing entries 
-                            <span class="font-semibold" x-text="((currentPage - 1) * itemsPerPage) + 1"></span> 
-                            to 
-                            <span class="font-semibold" x-text="Math.min(currentPage * itemsPerPage, filteredData().length)"></span> 
-                            of 
-                            <span class="font-semibold" x-text="filteredData().length"></span> 
-                            results
+                            Showing entries <span class="font-semibold" x-text="((currentPage - 1) * itemsPerPage) + 1"></span> to <span class="font-semibold" x-text="Math.min(currentPage * itemsPerPage, filteredData().length)"></span> of <span class="font-semibold" x-text="filteredData().length"></span> results
                         </p>
                     </div>
                     <div>
-                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-2" aria-label="Pagination">
-                            <button @click="currentPage = 1" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">First</button>
-                            <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Prev</button>
-                            <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border border-gray-300 rounded-lg">
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm gap-2">
+                            <button @click="currentPage = 1" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">First</button>
+                            <button @click="currentPage > 1 ? currentPage-- : null" :disabled="currentPage === 1" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Prev</button>
+                            <span class="inline-flex items-center px-4 py-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border rounded-lg">
                                 Page <span class="mx-1 text-orange-600" x-text="currentPage"></span> of <span class="ml-1" x-text="totalPages()"></span>
                             </span>
-                            <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Next</button>
-                            <button @click="currentPage = totalPages()" :disabled="currentPage === totalPages()" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-50 disabled:opacity-40 transition">Last</button>
+                            <button @click="currentPage < totalPages() ? currentPage++ : null" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Next</button>
+                            <button @click="currentPage = totalPages()" :disabled="currentPage === totalPages()" class="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-gray-50 disabled:opacity-40">Last</button>
                         </nav>
                     </div>
                 </div>
@@ -229,7 +218,6 @@
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Create / Update Profile</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Fill in the fields to save directly to database storage.</p>
                 </div>
                 <button @click="creationModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -246,11 +234,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">About</label>
-                            <textarea x-model="creationForm.about" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
+                            <textarea x-model="creationForm.about" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Requirements</label>
-                            <textarea x-model="creationForm.general_requirements" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
+                            <textarea x-model="creationForm.general_requirements" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
                         </div>
                     </div>
                 </template>
@@ -264,7 +252,6 @@
                                 <option value="East">East</option>
                                 <option value="South">South</option>
                                 <option value="North">North</option>
-                                <option value="North-east">North-east</option>
                                 <option value="West">West</option>
                             </select>
                         </div>
@@ -276,22 +263,6 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
                             <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Hours</label>
-                            <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description</label>
-                            <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Terms & Bookings</label>
-                            <input type="text" x-model="creationForm.bookings_and_terms" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Remarks</label>
-                            <input type="text" x-model="creationForm.remarks" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
                     </div>
                 </template>
 
@@ -299,43 +270,23 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Type</label>
-                            <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm" placeholder="e.g. Active Ageing Centres">
+                            <input type="text" x-model="creationForm.type" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location Address</label>
                             <input type="text" x-model="creationForm.location" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Phone</label>
-                            <input type="text" x-model="creationForm.phone" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Email</label>
-                            <input type="email" x-model="creationForm.email" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Hours</label>
-                            <input type="text" x-model="creationForm.operating_hours" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Website</label>
-                            <input type="text" x-model="creationForm.website" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description</label>
-                            <textarea x-model="creationForm.description" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
                         </div>
                     </div>
                 </template>
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Tags (Comma Separated)</label>
-                    <input type="text" x-model="creationForm.tags" placeholder="e.g. Seniors, Environment" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+                    <input type="text" x-model="creationForm.tags" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
                 </div>
 
                 <div class="pt-4 border-t flex justify-end space-x-3">
-                    <button type="button" @click="creationModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-emerald-700 shadow transition">Save Record</button>
+                    <button type="button" @click="creationModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-gray-600 hover:bg-gray-100">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-emerald-700 shadow">Save Record</button>
                 </div>
             </form>
         </div>
@@ -384,22 +335,6 @@
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Address</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
                             </div>
-                            <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Hours</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.operating_hours || '—'"></span>
-                            </div>
-                            <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Description</span>
-                                <p class="text-sm text-gray-600 whitespace-pre-wrap mt-0.5" x-text="selectedItem.description || '—'"></p>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Terms & Bookings</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.bookings_and_terms || '—'"></span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Remarks</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.remarks || '—'"></span>
-                            </div>
                         </div>
                     </template>
 
@@ -412,26 +347,6 @@
                             <div>
                                 <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Location Address</span>
                                 <span class="text-sm font-medium text-gray-700" x-text="selectedItem.location || '—'"></span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Phone</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.phone || '—'"></span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Email</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.email || '—'"></span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Hours</span>
-                                <span class="text-sm font-medium text-gray-700" x-text="selectedItem.operating_hours || '—'"></span>
-                            </div>
-                            <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Website</span>
-                                <a :href="selectedItem.website" target="_blank" class="text-sm font-semibold text-orange-600 hover:underline" x-text="selectedItem.website || '—'"></a>
-                            </div>
-                            <div class="col-span-2">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Description</span>
-                                <p class="text-sm text-gray-600 whitespace-pre-wrap mt-0.5" x-text="selectedItem.description || '—'"></p>
                             </div>
                         </div>
                     </template>
@@ -448,39 +363,36 @@
                         </div>
                     </div>
 
-                    <template x-if="['funds', 'venues', 'ecosystem'].includes(activeTab)">
-                        <div class="pt-4 border-t">
-                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Engagements</h4>
-                            <div class="bg-gray-50 border rounded-xl p-4 text-center">
-                                <span class="block text-2xl font-black text-gray-900" x-text="selectedItem.total_engagements || 0"></span>
-                                <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mt-0.5">Total Logs</span>
-                            </div>
-                            
-                            <div class="mt-4 space-y-2">
-                                <div class="text-[11px] font-medium text-gray-500">Latest Log:</div>
-                                <div class="bg-white border rounded-lg p-3 text-xs shadow-sm">
-                                    <template x-if="selectedItem.latest_engagement">
-                                        <div>
-                                            <div class="flex justify-between font-bold text-gray-800">
-                                                <span x-text="selectedItem.latest_engagement.username_handle"></span>
-                                                <span class="text-[10px] uppercase text-orange-600" x-text="selectedItem.latest_engagement.relationship_sentiment"></span>
-                                            </div>
-                                            <p class="text-gray-600 mt-1" x-text="selectedItem.latest_engagement.interaction_narrative"></p>
+                    <div class="pt-4 border-t">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Engagements</h4>
+                        <div class="bg-gray-50 border rounded-xl p-4 text-center">
+                            <span class="block text-2xl font-black text-gray-900" x-text="selectedItem.total_engagements || 0"></span>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <div class="text-[11px] font-medium text-gray-500">Latest Log:</div>
+                            <div class="bg-white border rounded-lg p-3 text-xs shadow-sm">
+                                <template x-if="selectedItem.latest_engagement">
+                                    <div>
+                                        <div class="flex justify-between font-bold text-gray-800">
+                                            <span x-text="selectedItem.latest_engagement.username_handle"></span>
+                                            <span class="text-[10px] uppercase text-orange-600" x-text="selectedItem.latest_engagement.relationship_sentiment"></span>
                                         </div>
-                                    </template>
-                                    <template x-if="!selectedItem.latest_engagement">
-                                        <span class="text-gray-400 italic">No logs recorded yet.</span>
-                                    </template>
-                                </div>
+                                        <p class="text-gray-600 mt-1" x-text="selectedItem.latest_engagement.interaction_narrative"></p>
+                                    </div>
+                                </template>
+                                <template x-if="!selectedItem.latest_engagement">
+                                    <span class="text-gray-400 italic">No logs recorded yet.</span>
+                                </template>
                             </div>
                         </div>
-                    </template>
+                    </div>
                 </div>
             </div>
 
             <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                <button @click="triggerDeleteAction(selectedItem)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Delete Record</button>
-                <button @click="profileModalOpen = false" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold uppercase tracking-wider rounded-lg transition">Close</button>
+                <button @click="triggerDeleteAction(selectedItem)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold uppercase rounded-lg">Delete Record</button>
+                <button @click="profileModalOpen = false" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold uppercase rounded-lg">Close</button>
             </div>
         </div>
     </div>
@@ -490,7 +402,6 @@
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Map Spreadsheet Headers</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Align your file columns with destination fields.</p>
                 </div>
                 <button @click="mappingModalOpen = false" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -508,7 +419,7 @@
                         <div class="grid grid-cols-2 gap-4 items-center bg-gray-50/50 p-3 rounded-xl border border-gray-150">
                             <span class="font-mono text-sm text-gray-700 truncate font-semibold" x-text="header"></span>
                             <div>
-                                <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium focus:ring-1 focus:ring-orange-500">
+                                <select x-model="headerMappings[header]" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium">
                                     <option value="ignore">Skip / Ignore Column</option>
                                     <option value="name">Name</option>
                                     <option value="about" x-show="activeTab === 'funds'">About</option>
@@ -517,14 +428,7 @@
                                     <option value="location" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Location</option>
                                     <option value="region" x-show="activeTab === 'venues'">Region</option>
                                     <option value="capacity" x-show="activeTab === 'venues'">Capacity</option>
-                                    <option value="operating_hours" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Hours</option>
-                                    <option value="description" x-show="activeTab === 'venues' || activeTab === 'ecosystem'">Description</option>
-                                    <option value="bookings_and_terms" x-show="activeTab === 'venues'">Terms & Bookings</option>
-                                    <option value="tags" x-show="['funds', 'venues', 'ecosystem'].includes(activeTab)">Tags</option>
-                                    <option value="remarks" x-show="activeTab === 'venues'">Remarks</option>
-                                    <option value="phone" x-show="activeTab === 'ecosystem'">Phone</option>
-                                    <option value="email" x-show="activeTab === 'ecosystem'">Email</option>
-                                    <option value="website" x-show="activeTab === 'ecosystem'">Website</option>
+                                    <option value="tags">Tags</option>
                                 </select>
                             </div>
                         </div>
@@ -533,29 +437,24 @@
             </div>
 
             <div class="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
-                <button @click="mappingModalOpen = false" class="px-4 py-2 bg-white border text-xs font-bold uppercase tracking-wider rounded-lg text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                <button @click="executeMappedImport()" class="px-5 py-2 bg-orange-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-orange-600 shadow transition">Process File</button>
+                <button @click="mappingModalOpen = false" class="px-4 py-2 border text-xs font-bold uppercase rounded-lg text-gray-600 hover:bg-gray-100">Cancel</button>
+                <button @click="executeMappedImport()" class="px-5 py-2 bg-orange-500 text-white text-xs font-bold uppercase rounded-lg hover:bg-orange-600 shadow">Process File</button>
             </div>
         </div>
     </div>
 
     <div x-show="conflictModalOpen" class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6" x-transition.opacity style="display: none;">
         <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
-            <div class="px-6 py-4 bg-rose-50 border-b border-rose-100 text-rose-950 flex justify-between items-center">
-                <div>
-                    <h3 class="text-base font-bold">Duplicate Found</h3>
-                    <p class="text-xs text-rose-700/80 mt-0.5 font-medium">Clashes found between the uploaded rows and current dataset.</p>
-                </div>
+            <div class="px-6 py-4 bg-rose-50 border-b border-rose-100 text-rose-950">
+                <h3 class="text-base font-bold">Duplicate Found</h3>
             </div>
             
             <div class="p-6 overflow-y-auto space-y-4 flex-1">
-                <p class="text-xs text-gray-500 leading-relaxed">Choose how to handle the following matching records:</p>
-                
                 <div class="space-y-2.5">
                     <template x-for="c in conflictsStaged" :key="c.name">
                         <div class="p-3 bg-gray-50 border rounded-xl flex items-center justify-between">
                             <span class="text-sm font-semibold text-gray-800 truncate max-w-[240px]" x-text="c.name"></span>
-                            <select x-model="c.resolution" class="px-2 py-1.5 bg-white border rounded-lg text-xs font-bold text-gray-600 focus:ring-1 focus:ring-orange-500">
+                            <select x-model="c.resolution" class="px-2 py-1.5 bg-white border rounded-lg text-xs font-bold text-gray-600">
                                 <option value="skip">Skip / Omit Row</option>
                                 <option value="rename">Append (Duplicate) Suffix</option>
                             </select>
@@ -565,18 +464,20 @@
             </div>
 
             <div class="px-6 py-3.5 bg-gray-50 border-t flex justify-end space-x-2">
-                <button @click="resolveStagedConflicts()" class="px-5 py-2 bg-rose-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-rose-700 shadow transition">Apply Fixes</button>
+                <button @click="resolveStagedConflicts()" class="px-5 py-2 bg-rose-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-rose-700 shadow">Apply Fixes</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co"; 
-        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA;
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         function crmApp() {
+            // Put your actual keys inside these string configurations
+            const SUPABASE_URL = "https://lpgaspucrcrkqclrlarl.supabase.co";
+            const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwZ2FzcHVjcmNya3FjbHJsYXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjI5MzUsImV4cCI6MjA5NDkzODkzNX0.Cot-0FivYjHJBVbRCYm4N1vCiUJP9euvueNYQEyddlA;
+            
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             const norm = s => String(s || '').trim().toLowerCase();
+
             return {
                 activeTab: 'funds', 
                 searchQuery: '',
@@ -598,7 +499,7 @@
 
                 selectedItem: {},
                 logForm: { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' },
-                creationForm: { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' },
+                creationForm: { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', tags: '' },
                 
                 uploadedHeaders: [],
                 headerMappings: {},
@@ -607,12 +508,12 @@
                 safeInsertsStaged: [],
 
                 async init() {
-                    await this.fetchDataLayers();
+                    await this.syncFromBackend();
                     this.$watch('activeTab', () => { this.currentPage = 1; this.selectedTypeFilter = ''; });
                     this.$watch('searchQuery', () => { this.currentPage = 1; });
                 },
 
-                async fetchDataLayers() {
+                async syncFromBackend() {
                     try {
                         const [fRes, vRes, eRes] = await Promise.all([
                             supabaseClient.from('funds').select('*'),
@@ -628,7 +529,7 @@
                         this.venues = vRes.data || [];
                         this.ecosystem = eRes.data || [];
                     } catch (err) {
-                        console.error("Database error:", err);
+                        console.error("Fetch failure:", err);
                     }
                 },
 
@@ -682,7 +583,7 @@
                 },
 
                 openCreationModal() {
-                    this.creationForm = { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', operating_hours: '', description: '', bookings_and_terms: '', remarks: '', type: '', phone: '', email: '', website: '', tags: '' };
+                    this.creationForm = { name: '', about: '', general_requirements: '', region: '', capacity: '', location: '', tags: '' };
                     this.creationModalOpen = true;
                 },
 
@@ -692,12 +593,15 @@
                 },
 
                 async triggerDeleteAction(item) {
-                    if (!confirm(`Are you sure you want to delete: "${item.name}"?`)) return;
-                    const { error } = await supabaseClient.from(this.activeTab).delete().eq('name', item.name);
-                    if (error) return alert(`Delete failed: ${error.message}`);
-                    this[this.activeTab] = this[this.activeTab].filter(i => i.name !== item.name);
-                    this.profileModalOpen = false;
-                    alert("Record deleted.");
+                    if (!confirm(`Delete: "${item.name}"?`)) return;
+                    try {
+                        const { error } = await supabaseClient.from(this.activeTab).delete().eq('name', item.name);
+                        if (error) throw error;
+                        this[this.activeTab] = this[this.activeTab].filter(i => i.name !== item.name);
+                        this.profileModalOpen = false;
+                    } catch(err) {
+                        alert("Delete error.");
+                    }
                 },
 
                 async executeManualCreation() {
@@ -713,18 +617,21 @@
                         payload.about = this.creationForm.about;
                         payload.general_requirements = this.creationForm.general_requirements;
                     } else if (type === 'venues') {
-                        payload = { ...payload, region: this.creationForm.region, capacity: this.creationForm.capacity, location: this.creationForm.location, operating_hours: this.creationForm.operating_hours, description: this.creationForm.description, bookings_and_terms: this.creationForm.bookings_and_terms, remarks: this.creationForm.remarks };
+                        payload = { ...payload, region: this.creationForm.region, capacity: this.creationForm.capacity, location: this.creationForm.location };
                     } else if (type === 'ecosystem') {
-                        payload = { ...payload, type: this.creationForm.type, location: this.creationForm.location, phone: this.creationForm.phone, email: this.creationForm.email, operating_hours: this.creationForm.operating_hours, website: this.creationForm.website, description: this.creationForm.description };
+                        payload = { ...payload, type: this.creationForm.type, location: this.creationForm.location };
                     }
 
-                    if (this.findByName(type, payload.name)) return alert("A record with this name already exists.");
+                    if (this.findByName(type, payload.name)) return alert("Record already exists.");
 
-                    const { data, error } = await supabaseClient.from(type).insert([payload]).select();
-                    if (error) return alert(`Save failed: ${error.message}`);
-
-                    this[type].push(data[0]);
-                    this.creationModalOpen = false;
+                    try {
+                        const { data, error } = await supabaseClient.from(type).insert([payload]).select();
+                        if (error) throw error;
+                        this[type].push(data[0]);
+                        this.creationModalOpen = false;
+                    } catch (err) {
+                        alert("Error saving record.");
+                    }
                 },
 
                 findByName(tab, name) {
@@ -738,15 +645,15 @@
                 },
 
                 sentimentClasses(s) {
-                    if (s === 'Good') return 'bg-emerald-600 text-white shadow-sm';
-                    if (s === 'Neutral') return 'bg-amber-500 text-white shadow-sm';
-                    return 'bg-rose-600 text-white shadow-sm';
+                    if (s === 'Good') return 'bg-emerald-600 text-white';
+                    if (s === 'Neutral') return 'bg-amber-500 text-white';
+                    return 'bg-rose-600 text-white';
                 },
 
                 async submitLog() {
                     const targetTab = this.logForm.category;
                     const targetItem = this.findByName(targetTab, this.logForm.name);
-                    if (!targetItem) return alert("Target record not found.");
+                    if (!targetItem) return alert("Record not found.");
 
                     const logObject = {
                         username_handle: this.logForm.username,
@@ -757,22 +664,26 @@
 
                     const updatedEngagements = (targetItem.total_engagements || 0) + 1;
 
-                    const { error } = await supabaseClient.from(targetTab)
-                        .update({ total_engagements: updatedEngagements, latest_engagement: logObject })
-                        .eq('name', targetItem.name);
-
-                    if (error) return alert(`Failed to update log: ${error.message}`);
-
-                    targetItem.total_engagements = updatedEngagements;
-                    targetItem.latest_engagement = logObject;
-
-                    alert(`Log added successfully!`);
-                    this.logForm = { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' };
+                    try {
+                        const { data, error } = await supabaseClient.from(targetTab)
+                            .update({ total_engagements: updatedEngagements, latest_engagement: logObject })
+                            .eq('name', targetItem.name)
+                            .select();
+                        if (error) throw error;
+                        
+                        targetItem.total_engagements = data[0].total_engagements;
+                        targetItem.latest_engagement = data[0].latest_engagement;
+                        
+                        alert(`Log added.`);
+                        this.logForm = { category: 'funds', name: '', username: '', sentiment: 'Neutral', notes: '' };
+                    } catch(err) {
+                        alert("Log submission error.");
+                    }
                 },
 
                 exportCurrentTable() {
                     const data = this.filteredData();
-                    if(!data.length) return alert("No entries to export.");
+                    if(!data.length) return alert("No entries.");
                     const csv = Papa.unparse(data);
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement("a");
@@ -842,7 +753,6 @@
                     });
 
                     if (inserts.length) await this.commitBatchToCloud(inserts);
-                    else alert('Import process complete.');
                     this.conflictModalOpen = false;
                 },
 
@@ -858,16 +768,14 @@
 
                 async commitBatchToCloud(records) {
                     if (!records.length) return;
-                    const { error } = await supabaseClient.from(this.activeTab).insert(records);
-                    if (error) {
-                        console.error('Import failed:', error);
-                        alert(`Failed to import rows: ${error.message}`);
-                        return;
+                    try {
+                        const { error } = await supabaseClient.from(this.activeTab).insert(records);
+                        if (error) throw error;
+                        await this.syncFromBackend();
+                        alert('Import complete.');
+                    } catch(err) {
+                        alert("Bulk transfer error.");
                     }
-                    records.forEach(record => {
-                        if (!this.findByName(this.activeTab, record.name)) this[this.activeTab].push(record);
-                    });
-                    alert('Import complete! Data synchronized.');
                 }
             };
         }
